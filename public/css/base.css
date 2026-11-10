@@ -1,0 +1,88 @@
+/* public/css/base.css  (You Jun)
+   Variables, reset and shared pieces used on every page. */
+
+:root {
+  --ink: #1f1f1e;
+  --surface: #ffffff;
+  --page: #f4f4f2;
+  --border: #c9c9c4;
+  --border-strong: #8d8d88;
+  --text-muted: #5f5f5f;
+  --blue: #0a6cff;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn--primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.btn:hover {
+  opacity: 0.88;
+}
+
+/* Initials circle used for users and travellers */
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #dbe7fb;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.avatars .avatar:nth-child(2) {
+  background: #e3e3dd;
+}
+
+.avatars .avatar:nth-child(3) {
+  background: #e8e3fa;
+}
+
+/* Hidden but still read by screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

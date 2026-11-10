@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plan a new trip · Orbit</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/trip-form.css">
+  <!-- Redirects to login.html if there is no token -->
+  <script type="module" src="js/shared/auth-check.js"></script>
+</head>
+<body>
+
+  <!-- Top bar (simplified: breadcrumb + Cancel) -->
+  <header class="topbar topbar--form">
+    <a class="topbar__brand" href="home.html">
+      <img src="images/orbit-logo.svg" alt="" width="28" height="28">
+      <span>Orbit</span>
+    </a>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="home.html">My trips</a>
+      <span aria-hidden="true">/</span>
+      <span id="breadcrumb-current">New trip</span>
+    </nav>
+    <a class="topbar__cancel" href="home.html">Cancel</a>
+  </header>
+
+  <main class="trip-form-page">
+
+    <!-- The same form is used for New trip and Edit trip.
+         trip-form.js: if the URL has ?trip=<id>, load that trip, fill the fields
+         and switch the texts (#form-title, #submit-btn, #breadcrumb-current). -->
+    <form class="trip-form" id="trip-form" novalidate>
+      <h1 id="form-title">Plan a new trip</h1>
+      <p class="trip-form__sub" id="form-sub">Start with the basics. You can change everything later.</p>
+
+      <div class="field">
+        <label for="trip-name">Trip name</label>
+        <input id="trip-name" name="name" type="text" maxlength="100" placeholder="e.g. Paris Winter Break" required>
+        <p class="field__error" id="error-name" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="trip-destination">Destination</label>
+        <input id="trip-destination" name="destination" type="text" maxlength="100" placeholder="e.g. Paris, France" required>
+        <p class="field__error" id="error-destination" hidden></p>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="trip-start">Start date</label>
+          <input id="trip-start" name="start_date" type="date" required>
+        </div>
+        <div class="field">
+          <label for="trip-end">End date</label>
+          <input id="trip-end" name="end_date" type="date" required>
+        </div>
+        <span class="field-row__days" id="day-count" aria-live="polite"></span>
+      </div>
+      <p class="field__error" id="error-dates" hidden></p>
+
+      <div class="field">
+        <label for="traveller-email">Travellers <span class="optional">(optional)</span></label>
+        <div class="traveller-add">
+          <input id="traveller-email" type="email" placeholder="friend@email.com">
+          <button type="button" class="btn" id="add-traveller">Add</button>
+        </div>
+        <p class="field__error" id="error-traveller" hidden></p>
+
+        <!-- Chips are added by trip-form.js. The first chip is always the signed-in user. -->
+        <ul class="chips" id="traveller-list">
+          <li class="chip">
+            <span class="avatar" id="me-initials">JD</span>
+            <span id="me-name">John (you)</span>
+          </li>
+        </ul>
+      </div>
+
+      <p class="field__error form-error" id="error-form" hidden></p>
+
+      <div class="trip-form__actions">
+        <button type="submit" class="btn btn--primary" id="submit-btn">Create trip</button>
+        <a class="btn" href="home.html">Cancel</a>
+      </div>
+    </form>
+
+    <aside class="trip-aside" aria-label="What your trip includes">
+      <p class="trip-aside__title">Your trip will start with</p>
+      <div class="info-card">
+        <strong>Itinerary</strong>
+        <p>One empty column per day, from your start to end date.</p>
+      </div>
+      <div class="info-card">
+        <strong>Shared with your travellers</strong>
+        <p>Everyone you add can see and edit the itinerary.</p>
+      </div>
+    </aside>
+
+  </main>
+
+  <script type="module" src="js/trip-form.js"></script>
+</body>
+</html>

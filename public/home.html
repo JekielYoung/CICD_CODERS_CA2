@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My trips · Orbit</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/home.css">
+  <!-- Redirects to login.html if there is no token -->
+  <script type="module" src="js/shared/auth-check.js"></script>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <a class="topbar__brand" href="home.html">
+      <img src="images/orbit-logo.svg" alt="" width="28" height="28">
+      <span>Orbit</span>
+    </a>
+
+    <nav class="topbar__nav" aria-label="Main">
+      <a href="home.html" class="is-active">My trips</a>
+      <a href="home.html?view=shared">Shared with me</a>
+    </nav>
+
+    <form class="topbar__search" role="search">
+      <label for="search" class="visually-hidden">Search trips</label>
+      <input id="search" type="search" placeholder="Search trips">
+    </form>
+
+    <div class="topbar__user">
+      <button type="button" id="user-menu-btn" aria-haspopup="true">
+        <span class="avatar" id="user-initials">JD</span>
+        <span id="user-name">John</span> ▾
+      </button>
+      <div id="user-menu" class="menu" hidden>
+        <button type="button" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="home">
+
+    <!-- Greeting + quick create -->
+    <section class="home__intro">
+      <div>
+        <h1 id="greeting">Good afternoon, John</h1>
+        <p id="greeting-sub">You have 2 upcoming trips. The next one starts in 41 days.</p>
+      </div>
+
+      <form class="quick-trip" id="quick-trip-form">
+        <h2>Start a new trip</h2>
+        <div class="quick-trip__row">
+          <div class="field">
+            <label for="qt-destination">Where to?</label>
+            <input id="qt-destination" name="destination" type="text" placeholder="e.g. Kyoto, Japan" required>
+          </div>
+          <div class="field">
+            <label for="qt-dates">Dates</label>
+            <input id="qt-dates" name="dates" type="text" placeholder="Add dates">
+          </div>
+          <button type="submit" class="btn btn--primary">Create trip</button>
+        </div>
+        <p class="hint">You can name the trip and invite travellers on the next step.</p>
+      </form>
+    </section>
+
+    <!-- Filter + sort -->
+    <section class="home__controls">
+      <div class="tabs" role="tablist" aria-label="Trip filter">
+        <button type="button" role="tab" class="tab is-active" data-filter="upcoming">Upcoming · <span id="count-upcoming">3</span></button>
+        <button type="button" role="tab" class="tab" data-filter="past">Past · <span id="count-past">2</span></button>
+        <button type="button" role="tab" class="tab" data-filter="all">All</button>
+      </div>
+
+      <label class="sort">
+        <span class="visually-hidden">Sort trips</span>
+        <select id="sort">
+          <option value="start">Sort: Start date</option>
+          <option value="name">Sort: Name</option>
+        </select>
+      </label>
+    </section>
+
+    <!-- Trip cards: home.js clears and refills #trip-grid from /api/trips.
+         The cards below are sample markup so you can style them first. -->
+    <section class="trip-grid" id="trip-grid" aria-live="polite">
+
+      <a class="trip-card trip-card--new" href="trip-form.html">
+        <span class="trip-card__plus">+</span>
+        <strong>New trip</strong>
+        <span>Name, destination and dates</span>
+      </a>
+
+      <article class="trip-card">
+        <div class="trip-card__cover">
+          <span class="badge">In 41 days</span>
+          <span class="trip-card__cover-label">Cover photo</span>
+        </div>
+        <div class="trip-card__body">
+          <h3>Paris Winter Break</h3>
+          <p class="trip-card__dates">14 – 18 Dec 2026 · 5 days</p>
+          <div class="progress">
+            <div class="progress__bar"><span style="width: 60%"></span></div>
+            <span class="progress__label">3 of 5 days planned</span>
+          </div>
+          <div class="trip-card__footer">
+            <div class="avatars">
+              <span class="avatar">JD</span><span class="avatar">AK</span><span class="avatar">ML</span>
+            </div>
+            <a href="itinerary.html?trip=1">Open →</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="trip-card">
+        <div class="trip-card__cover">
+          <span class="badge">In 80 days</span>
+          <span class="trip-card__cover-label">Cover photo</span>
+        </div>
+        <div class="trip-card__body">
+          <h3>Bali Long Weekend</h3>
+          <p class="trip-card__dates">22 – 25 Jan 2027 · 4 days</p>
+          <div class="progress">
+            <div class="progress__bar"><span style="width: 25%"></span></div>
+            <span class="progress__label">1 of 4 days planned</span>
+          </div>
+          <div class="trip-card__footer">
+            <div class="avatars">
+              <span class="avatar">JD</span><span class="avatar">AK</span><span class="avatar">ML</span>
+            </div>
+            <a href="itinerary.html?trip=2">Open →</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="trip-card">
+        <div class="trip-card__cover">
+          <span class="badge">In 147 days</span>
+          <span class="trip-card__cover-label">Cover photo</span>
+        </div>
+        <div class="trip-card__body">
+          <h3>Tokyo Cherry Blossoms</h3>
+          <p class="trip-card__dates">29 Mar – 6 Apr 2027 · 9 days</p>
+          <div class="progress">
+            <div class="progress__bar"><span style="width: 0%"></span></div>
+            <span class="progress__label">Not started</span>
+          </div>
+          <div class="trip-card__footer">
+            <div class="avatars"><span class="avatar">JD</span></div>
+            <a href="itinerary.html?trip=3">Open →</a>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Shown by home.js when the filter or search finds nothing -->
+    <p class="empty" id="empty-state" hidden>No trips found.</p>
+
+  </main>
+
+  <script type="module" src="js/home.js"></script>
+</body>
+</html>
