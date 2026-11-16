@@ -1,0 +1,59 @@
+/* public/css/base.css  
+   Loaded AFTER Bootstrap. Sets Orbit's colours on top of Bootstrap and
+   holds the few shared pieces Bootstrap doesn't have (avatars).
+   Layout, buttons, forms, cards and spacing come from Bootstrap classes. */
+
+:root {
+  --bs-body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bs-body-bg: #f4f4f2;
+  --bs-body-color: #1f1f1e;
+  --bs-border-color: #c9c9c4;
+  --bs-secondary-color: #5f5f5f;
+  --bs-link-color-rgb: 31, 31, 30;
+  --bs-border-radius: 0.5rem;
+  --bs-border-radius-lg: 0.75rem;
+}
+
+/* Cards: white with a thin border, no shadow, like the wireframes */
+.card {
+  --bs-card-bg: #fff;
+  --bs-card-border-color: #c9c9c4;
+  --bs-card-border-radius: 0.75rem;
+}
+
+/* Progress bar: thin and black */
+.progress {
+  --bs-progress-height: 6px;
+  --bs-progress-bg: #e3e3dd;
+  --bs-progress-bar-bg: #1f1f1e;
+}
+
+/* Initials circle for users and travellers */
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #dbe7fb;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1f1f1e;
+}
+
+.avatars {
+  display: flex;
+}
+
+.avatars .avatar + .avatar {
+  margin-left: -6px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.avatars .avatar:nth-child(2) {
+  background: #e3e3dd;
+}
+
+.avatars .avatar:nth-child(3) {
+  background: #e8e3fa;
+}
