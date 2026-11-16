@@ -1,0 +1,38 @@
+/* public/css/layout.css  (Jason)
+   Top bar tweaks on top of Bootstrap's navbar. */
+
+.orbit-navbar {
+  min-height: 60px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Active nav link gets an underline, like the wireframe tabs */
+.orbit-navbar .navbar-nav .nav-link {
+  padding: 1.1rem 0.25rem;
+  margin-right: 1rem;
+  border-bottom: 3px solid transparent;
+  color: #5f5f5f;
+  font-weight: 500;
+}
+
+.orbit-navbar .navbar-nav .nav-link:hover {
+  color: #1f1f1e;
+}
+
+.orbit-navbar .navbar-nav .nav-link.active {
+  border-bottom-color: #1f1f1e;
+  color: #1f1f1e;
+  font-weight: 600;
+}
+
+.orbit-navbar input[type="search"] {
+  min-width: 240px;
+}
+
+@media (max-width: 767.98px) {
+  .orbit-navbar .navbar-nav .nav-link {
+    padding: 0.5rem 0;
+    border-bottom: 0;
+  }
+}
