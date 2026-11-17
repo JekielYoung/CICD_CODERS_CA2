@@ -8,11 +8,11 @@ const tripRoutes = require('../trips.js');
 
 const app = express();
 
-if (!process.env.JWT_SECRET) {
-  console.warn('JWT_SECRET is not set. Copy .env.example to .env first.');
+if (!process.env.JWT_SECRET_KEY) {
+  console.warn('JWT_SECRET_KEY is not set. Copy .env.example to .env first.');
 }
 
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/trips", tripRoutes);
@@ -23,7 +23,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // API routes: uncomment each line as its file is added
-// app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/auth', require('./routes/authRoutes.js'));
 // app.use('/api/trips', require('./routes/trips.routes'));
 // app.use('/api/activities', require('./routes/activities.routes'));
 
@@ -32,6 +32,11 @@ app.use('/api', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
+
+  // Oversized or malformed request bodies are the client's fault: 400, not 500 (REG-09)
+  if (err.type === 'entity.too.large' || err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Invalid or oversized request.' });
+  }
   console.error(err);
   res.status(err.status || 500).json({ error: err.message || 'Server error' });
 });
