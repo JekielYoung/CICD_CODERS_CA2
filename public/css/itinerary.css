@@ -1,0 +1,1205 @@
+/* Orbit itinerary, built on existing Bootstrap base/layout stylesheet */
+
+:root {
+  --ink: #232323;
+  --muted: #72736f;
+  --line: #d6d6d1;
+  --soft: #f3f3f1;
+  --panel: #ecece9;
+  --purple: #5540c8;
+  --purple-light: #efecff;
+  --blue: #37609b;
+  --blue-light: #e5edff;
+  --green: #278364;
+  --radius: 10px;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #b6aafa;
+  outline-offset: 2px;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.orbit-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.trip-header {
+  height: 73px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 24px;
+  flex: none;
+}
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+  min-width: 0;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 760;
+  font-size: 20px;
+  white-space: nowrap;
+}
+.orbit-mark {
+  width: 33px;
+  height: 22px;
+  display: block;
+}
+.trip-heading {
+  min-width: 0;
+}
+.trip-heading strong {
+  display: block;
+  font-size: 18px;
+  white-space: nowrap;
+}
+.trip-heading small {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.trip-nav {
+  align-self: stretch;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin-right: auto;
+  margin-left: 20px;
+}
+.trip-nav .nav-link {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  padding: 0 17px;
+  color: #666;
+  font-size: 16px;
+}
+.trip-nav .nav-link.active {
+  border-bottom-color: #222;
+  color: #222;
+  font-weight: 650;
+}
+.trip-header-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.btn {
+  border: 1px solid #a9a9a4;
+  background: #fff;
+  color: #222;
+  border-radius: 7px;
+  padding: 11px 17px;
+  min-height: 44px;
+}
+.btn:hover {
+  background: #f5f5f2;
+}
+.btn-dark {
+  background: #222;
+  color: #fff;
+  border-color: #222;
+  font-weight: 650;
+}
+.btn-dark:hover {
+  background: #414141;
+}
+.btn-purple {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+  font-weight: 650;
+}
+.btn-purple:hover {
+  background: #4933b3;
+}
+.btn-outline-purple {
+  color: var(--purple);
+  border: 1.5px solid #7257eb;
+  background: #fff;
+  font-weight: 600;
+}
+.btn-outline-purple:hover {
+  background: #f5f2ff;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 376px;
+  min-height: calc(100vh - 73px);
+}
+.sidebar {
+  background: #fff;
+  border-right: 1px solid var(--line);
+  padding: 19px 21px;
+}
+.eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  font-weight: 750;
+  color: #71716e;
+  margin: 1px 0 9px;
+}
+.day-link {
+  padding: 10px 12px;
+  margin-bottom: 5px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+.day-link:hover,
+.day-link.active {
+  background: #e5e5e1;
+}
+.day-link strong {
+  font-size: 15px;
+  display: block;
+}
+.day-link small {
+  color: var(--muted);
+  font-size: 14px;
+  display: block;
+  margin-top: 3px;
+}
+.dashed {
+  border: 1.5px dashed #aaa9a1;
+  background: transparent;
+  border-radius: 8px;
+}
+.add-day {
+  margin: 17px 0 26px;
+  width: 100%;
+  padding: 14px;
+  text-align: left;
+  color: #666;
+}
+.add-day:hover,
+.add-inline:hover {
+  background: #e1e1dc;
+}
+.status-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.count-bubble {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #202020;
+  color: white;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 15px;
+}
+.status-track {
+  height: 10px;
+  border-radius: 6px;
+  background: #e2e2de;
+  display: flex;
+  overflow: hidden;
+  margin-top: 5px;
+}
+.status-track span {
+  transition: width 0.2s;
+}
+.status-track .completed {
+  background: #282828;
+}
+.status-track .booked {
+  background: #9fb8e8;
+}
+.status-track .planned {
+  background: #dbdbd8;
+}
+.main {
+  padding: 20px 24px 36px;
+  min-width: 0;
+  background: #f8f8f6;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.segmented {
+  display: inline-flex;
+  border: 1px solid #a8a8a3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+.segmented button {
+  background: transparent;
+  border: 0;
+  padding: 14px 17px;
+  min-height: 51px;
+  border-right: 1px solid #a8a8a3;
+}
+.segmented button:last-child {
+  border-right: 0;
+}
+.segmented button.active {
+  background: #222;
+  color: white;
+}
+.toolbar-spacer {
+  flex: 1;
+}
+.filter {
+  height: 52px;
+  padding: 0 14px;
+  border: 1px solid #aaa;
+  border-radius: 7px;
+  background: #fff;
+}
+.board {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 18px;
+}
+.day-column {
+  background: #efefec;
+  border-radius: 14px;
+  padding: 12px;
+  flex: 1 0 274px;
+  min-width: 274px;
+  max-width: 390px;
+}
+.day-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 3px 2px 12px;
+}
+.day-column-header strong {
+  font-size: 18px;
+  white-space: nowrap;
+}
+.day-column-header small {
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.activity {
+  background: #fff;
+  border: 1.5px solid #c9c9c4;
+  border-radius: 10px;
+  padding: 12px 12px 11px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 0 #00000006;
+  position: relative;
+}
+.activity.dragging {
+  opacity: 0.5;
+}
+.activity.drag-over,
+.day-column.drag-over {
+  outline: 2px dashed #5c76bb;
+  outline-offset: 2px;
+}
+.activity-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+.activity-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 650;
+  color: #6d6d68;
+  white-space: nowrap;
+}
+.drag-handle {
+  cursor: grab;
+  font-size: 19px;
+  line-height: 1;
+  color: #989994;
+  letter-spacing: -3px;
+  user-select: none;
+}
+.activity h3 {
+  font-size: 16px;
+  margin: 8px 0 6px 19px;
+  line-height: 1.24;
+}
+.activity-place {
+  font-size: 14px;
+  color: #777872;
+  margin-left: 19px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.pin {
+  font-size: 14px;
+}
+.note {
+  background: #f3f3f1;
+  padding: 6px 9px;
+  border-radius: 5px;
+  color: #686863;
+  font-size: 14px;
+  margin: 9px 0 0 19px;
+  line-height: 1.23;
+}
+.status-pill {
+  font-size: 12px;
+  border-radius: 20px;
+  padding: 4px 9px;
+  font-weight: 700;
+  cursor: pointer;
+  max-width: 114px;
+}
+.status-pill.planned {
+  border: 1.5px dashed #aaa;
+  background: white;
+  color: #60615b;
+}
+.status-pill.booked {
+  border: 1px solid #9db5ed;
+  background: var(--blue-light);
+  color: #345987;
+}
+.status-pill.completed {
+  border: 1px solid #202020;
+  background: #242424;
+  color: #fff;
+}
+.activity-actions {
+  display: none;
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  gap: 4px;
+}
+.activity:hover .activity-actions,
+.activity:focus-within .activity-actions {
+  display: flex;
+}
+.mini-action {
+  padding: 4px 6px;
+  border: 1px solid #deded9;
+  border-radius: 4px;
+  background: #fff;
+  color: #666;
+  font-size: 12px;
+}
+.gap-card {
+  border: 2px dashed #a2a39d;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
+  min-height: 100px;
+  background: #ededeb;
+}
+.gap-card.featured {
+  background: var(--purple-light);
+  border-color: #654ae0;
+  color: #4430b3;
+  min-height: 95px;
+}
+.gap-card .gap-time {
+  font-size: 14px;
+  color: #74746f;
+  margin-bottom: 8px;
+}
+.gap-card.featured .gap-time {
+  color: #4133a0;
+  font-weight: 650;
+}
+.gap-card p {
+  color: #42349b;
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+.add-inline {
+  width: 100%;
+  padding: 15px 13px;
+  color: #72726c;
+  text-align: left;
+  font-size: 15px;
+}
+.suggestion-panel {
+  border-left: 1px solid var(--line);
+  padding: 19px 19px 22px;
+  background: #fff;
+  min-width: 0;
+}
+.suggestion-panel h2 {
+  font-size: 18px;
+  color: #39299a;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.sparkle {
+  color: var(--purple);
+  font-size: 20px;
+}
+.suggestion-context {
+  background: var(--purple-light);
+  border-radius: 9px;
+  padding: 12px;
+  color: #4331a3;
+  margin-bottom: 14px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.suggestion-context strong {
+  display: block;
+}
+.suggestion-card {
+  border: 1.5px solid #cfcfca;
+  border-radius: 10px;
+  padding: 15px 14px 13px;
+  margin-bottom: 14px;
+}
+.suggestion-top {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.suggestion-top h3 {
+  font-size: 16px;
+  line-height: 1.22;
+  margin: 0 0 6px;
+}
+.suggestion-top small {
+  color: #777;
+  white-space: nowrap;
+}
+.suggestion-card .travel {
+  font-size: 14px;
+  color: #777;
+  margin: 0 0 8px;
+}
+.suggestion-card p {
+  font-size: 14px;
+  color: #696963;
+  line-height: 1.24;
+  margin: 0 0 10px;
+}
+.suggestion-actions {
+  display: flex;
+  gap: 8px;
+}
+.suggestion-actions .btn-purple {
+  flex: 1;
+}
+.suggestion-actions button {
+  padding: 10px;
+}
+.regen {
+  width: 100%;
+  padding: 13px;
+  color: var(--purple);
+  border: 1.5px solid #735cea;
+  border-radius: 7px;
+  background: white;
+}
+.regen:hover {
+  background: #f6f4ff;
+}
+.disclaimer {
+  font-size: 13px;
+  line-height: 1.3;
+  color: #777;
+  margin-top: 14px;
+}
+.empty-state {
+  padding: 30px;
+  text-align: center;
+  color: #76766f;
+  border: 1px dashed #aaa;
+  border-radius: 10px;
+}
+.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.list-section,
+.calendar-day,
+.feature-panel {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 20px;
+}
+.list-section h2,
+.calendar-day h2 {
+  font-size: 18px;
+  margin: 0 0 14px;
+}
+.list-section .activity {
+  max-width: none;
+}
+.calendar-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+.calendar-day {
+  min-height: 280px;
+}
+.calendar-activity {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid #d8d4f1;
+  background: #f5f3ff;
+  border-radius: 7px;
+  padding: 10px;
+  margin-bottom: 8px;
+  color: #3d3593;
+}
+.feature-panel h2 {
+  font-size: 24px;
+  margin: 0 0 5px;
+}
+.feature-panel > p {
+  color: #666;
+  margin: 0 0 20px;
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px;
+  border-bottom: 1px solid #ececea;
+  gap: 10px;
+}
+.check-row label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.check-row input {
+  accent-color: var(--purple);
+  width: 18px;
+  height: 18px;
+}
+.category-group {
+  margin-bottom: 24px;
+}
+.category-group h3 {
+  margin: 10px 0;
+}
+.tag {
+  font-size: 12px;
+  color: #6452b5;
+  background: #f0ecff;
+  padding: 4px 8px;
+  border-radius: 15px;
+}
+.field-row {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0;
+}
+.field-row input,
+.field-row select {
+  border: 1px solid #bbb;
+  border-radius: 7px;
+  padding: 11px;
+  min-width: 0;
+}
+.field-row input {
+  flex: 1;
+}
+.document-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  padding: 14px;
+  margin: 12px 0;
+}
+.document-icon {
+  font-size: 26px;
+}
+.document-row div {
+  flex: 1;
+}
+.document-row strong {
+  display: block;
+}
+.document-row small {
+  color: #777;
+}
+.orbit-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background: #0008;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.orbit-dialog {
+  width: min(510px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 20px 80px #0004;
+}
+.orbit-dialog h2 {
+  margin: 0 0 17px;
+  font-size: 24px;
+}
+.orbit-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.orbit-dialog label {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.orbit-dialog input,
+.orbit-dialog select,
+.orbit-dialog textarea {
+  width: 100%;
+  padding: 11px;
+  border-radius: 7px;
+  border: 1px solid #bbb;
+  background: white;
+}
+.orbit-dialog textarea {
+  resize: vertical;
+  min-height: 76px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 7px;
+}
+.orbit-dialog .close {
+  float: right;
+  border: 0;
+  background: transparent;
+  font-size: 26px;
+  line-height: 1;
+  color: #888;
+}
+.orbit-toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #242424;
+  color: #fff;
+  border-radius: 9px;
+  padding: 12px 18px;
+  box-shadow: 0 8px 25px #0003;
+  z-index: 10;
+}
+.hidden {
+  display: none !important;
+}
+@media (max-width: 1250px) {
+  .workspace {
+    grid-template-columns: 225px minmax(0, 1fr) 315px;
+  }
+  .sidebar {
+    padding: 18px 14px;
+  }
+  .suggestion-panel {
+    padding: 18px 13px;
+  }
+  .trip-header {
+    padding: 0 15px;
+  }
+  .brand-area {
+    gap: 17px;
+  }
+  .trip-nav {
+    margin-left: 5px;
+  }
+  .trip-nav .nav-link {
+    padding: 0 10px;
+  }
+  .main {
+    padding: 18px 14px;
+  }
+}
+@media (max-width: 970px) {
+  .workspace {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+  .suggestion-panel {
+    grid-column: 2;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .suggestion-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .suggestion-card {
+    margin-bottom: 0;
+  }
+  .trip-heading small {
+    font-size: 12px;
+  }
+  .trip-nav {
+    margin-left: auto;
+  }
+  .trip-header-right {
+    gap: 10px;
+  }
+}
+@media (max-width: 670px) {
+  .trip-header {
+    height: auto;
+    min-height: 70px;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 10px 13px;
+  }
+  .brand-area {
+    gap: 10px;
+  }
+  .brand {
+    font-size: 18px;
+  }
+  .trip-heading strong {
+    font-size: 15px;
+  }
+  .trip-heading small {
+    font-size: 11px;
+  }
+  .trip-nav {
+    order: 3;
+    width: 100%;
+    margin: 8px 0 -10px;
+    justify-content: space-between;
+  }
+  .trip-nav .nav-link {
+    padding: 11px 13px;
+  }
+  .trip-header-right {
+    margin-left: auto;
+  }
+  .trip-header-right .btn {
+    padding: 8px;
+  }
+  .workspace {
+    display: block;
+  }
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 12px;
+  }
+  .day-links {
+    display: flex;
+    overflow-x: auto;
+    gap: 6px;
+  }
+  .day-link {
+    min-width: 150px;
+    margin: 0;
+  }
+  .sidebar .add-day {
+    margin: 10px 0;
+  }
+  .sidebar .status-summary {
+    display: none;
+  }
+  .main {
+    padding: 14px 12px;
+  }
+  .toolbar {
+    gap: 9px;
+  }
+  .segmented button {
+    padding: 10px;
+  }
+  .filter {
+    height: 43px;
+  }
+  .toolbar .btn-dark {
+    min-height: 43px;
+    padding: 9px;
+  }
+  .day-column {
+    flex-basis: 275px;
+  }
+  .suggestion-panel {
+    padding: 18px 12px;
+  }
+  .suggestion-list {
+    display: block;
+  }
+  .suggestion-card {
+    margin-bottom: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+
+/* Screen-specific rules only. Existing base.css, home.css, layout.css remain untouched. */
+.orbit-app {
+  --ink: #1f1f1e;
+  --muted: #72736f;
+  --line: var(--bs-border-color);
+  --soft: #f3f3f1;
+  --panel: #ecece9;
+  --purple: #5540c8;
+  --purple-light: #efecff;
+  --blue: #37609b;
+  --blue-light: #e5edff;
+  --green: #278364;
+  --radius: 10px;
+  color: var(--bs-body-color);
+  font-family: var(--bs-body-font-family);
+  background: var(--bs-body-bg);
+  font-size: 15px;
+}
+.orbit-app .trip-header {
+  min-height: 73px;
+}
+.orbit-app .trip-nav {
+  margin-bottom: 0;
+  padding-left: 0;
+  gap: 0;
+}
+.orbit-app .trip-nav .nav-link {
+  border-radius: 0;
+  font-size: 16px;
+  background: transparent;
+}
+.orbit-app .trip-nav .nav-link.active {
+  border-bottom-color: #1f1f1e;
+}
+.orbit-app .avatars .avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 12px;
+}
+.orbit-app .btn {
+  --bs-btn-font-size: 15px;
+}
+.orbit-app .feature-panel,
+.orbit-app .activity,
+.orbit-app .suggestion-card {
+  --bs-card-bg: #fff;
+  --bs-card-border-color: var(--bs-border-color);
+}
+.orbit-app .suggestion-panel {
+  background: #fff;
+}
+.orbit-app .status-track {
+  height: var(--bs-progress-height, 6px);
+}
+.orbit-app .field-row .form-control {
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 670px) {
+  .orbit-app .avatars .avatar {
+    width: 29px;
+    height: 29px;
+  }
+  .orbit-app .trip-nav .nav-link {
+    margin-right: 0;
+  }
+  .orbit-app .trip-header {
+    padding-bottom: 0;
+  }
+}
+
+/* Itinerary-only version: tabs remain visible for future modules. */
+.orbit-app .workspace {
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.orbit-app .main {
+  min-width: 0;
+}
+.orbit-app .gap-card {
+  min-height: auto;
+  padding: 10px 12px;
+}
+.orbit-app .gap-card .btn {
+  font-size: 13px;
+  min-height: 36px;
+  padding: 6px 10px;
+}
+@media (max-width: 1250px) {
+  .orbit-app .workspace {
+    grid-template-columns: 225px minmax(0, 1fr);
+  }
+}
+@media (max-width: 970px) {
+  .orbit-app .workspace {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+}
+@media (max-width: 670px) {
+  .orbit-app .workspace {
+    display: block;
+  }
+}
+
+/* Wide view switcher and compact AI placeholder */
+.orbit-app .workspace {
+  grid-template-columns: 225px minmax(0, 1fr) 222px;
+}
+.orbit-app .main {
+  padding: 20px 18px 36px;
+}
+.orbit-app .toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.orbit-app .toolbar .segmented {
+  flex: 1 1 320px;
+  display: flex;
+  min-width: 0;
+}
+.orbit-app .toolbar .segmented button {
+  flex: 1 1 0;
+  min-width: 0;
+  font-weight: 600;
+}
+.orbit-app .toolbar .filter {
+  flex: 0 0 164px;
+  width: 164px;
+}
+.orbit-app .toolbar .toolbar-spacer {
+  display: none;
+}
+.orbit-app .toolbar #addActivityBtn {
+  flex: 0 0 auto;
+}
+.orbit-app .day-column {
+  max-width: none;
+}
+.orbit-app .ai-placeholder {
+  border-left: 1px solid var(--line);
+  background: white;
+  padding: 20px 13px;
+  min-width: 0;
+}
+.orbit-app .ai-placeholder-inner {
+  border: 1px dashed #c4bde9;
+  border-radius: 12px;
+  padding: 15px 12px;
+  background: #fcfbff;
+}
+.orbit-app .ai-placeholder-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #4430a3;
+  margin-bottom: 12px;
+}
+.orbit-app .ai-placeholder-title span {
+  font-size: 19px;
+  margin-right: 5px;
+}
+.orbit-app .ai-placeholder p {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #737079;
+  margin-bottom: 19px;
+}
+.orbit-app .ai-placeholder-skeleton {
+  height: 11px;
+  background: #eae6fa;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.orbit-app .ai-placeholder-skeleton.short {
+  width: 65%;
+}
+.orbit-app .ai-placeholder-button {
+  width: 100%;
+  font-size: 13px;
+  padding: 7px;
+  margin-top: 12px;
+}
+.orbit-app select.status-pill {
+  appearance: auto;
+  -webkit-appearance: auto;
+  font-size: 12px;
+  width: 112px;
+  max-width: 112px;
+  min-height: 29px;
+  padding: 3px 5px;
+  border-radius: 20px;
+  cursor: pointer;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+.orbit-app select.status-pill:focus {
+  outline: 2px solid #9f94e6;
+  outline-offset: 1px;
+}
+@media (max-width: 1150px) {
+  .orbit-app .workspace {
+    grid-template-columns: 195px minmax(0, 1fr) 190px;
+  }
+  .orbit-app .main {
+    padding: 16px 12px;
+  }
+  .orbit-app .toolbar .segmented {
+    flex-basis: 240px;
+  }
+}
+@media (max-width: 850px) {
+  .orbit-app .workspace {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+  .orbit-app .ai-placeholder {
+    grid-column: 2;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 12px;
+  }
+  .orbit-app .ai-placeholder-inner {
+    max-width: 420px;
+  }
+  .orbit-app .toolbar .segmented {
+    flex-basis: 100%;
+  }
+}
+@media (max-width: 670px) {
+  .orbit-app .workspace {
+    display: block;
+  }
+  .orbit-app .ai-placeholder {
+    border-top: 1px solid var(--line);
+  }
+  .orbit-app .toolbar .segmented {
+    flex-basis: 100%;
+  }
+  .orbit-app .toolbar .filter {
+    flex: 1 1 130px;
+  }
+  .orbit-app .toolbar #addActivityBtn {
+    flex: 1 1 120px;
+  }
+}
+
+/* Status is filtered from the toolbar; cards display a simple read-only badge. */
+.orbit-app .activity .status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  width: auto;
+  max-width: none;
+  cursor: default;
+  white-space: nowrap;
+}
+.orbit-app #statusFilter {
+  cursor: pointer;
+  border: 1px solid #999;
+  background-color: #fff;
+  font-weight: 600;
+}
+.orbit-app #statusFilter:focus {
+  border-color: #6551d1;
+  box-shadow: 0 0 0 0.2rem rgba(101, 81, 209, 0.16);
+}
+
+/* Modal dialogs intentionally use Orbit-specific names to avoid Bootstrap 5
+   .modal {display:none} and .modal-backdrop stacking behaviour. */
+.orbit-app .orbit-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.48);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.orbit-app .orbit-dialog {
+  display: block;
+  position: relative;
+  width: min(510px, 100%);
+  max-height: min(90vh, 850px);
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 20px 80px #0004;
+}
+.orbit-app .orbit-dialog .field-row {
+  align-items: flex-end;
+}
+.orbit-app .orbit-dialog #inviteLink {
+  min-width: 0;
+  flex: 1;
+}
+.orbit-app .orbit-toast {
+  z-index: 2100;
+}
+@media (max-width: 500px) {
+  .orbit-app .orbit-dialog {
+    padding: 18px;
+  }
+  .orbit-app .orbit-dialog .field-row {
+    flex-wrap: wrap;
+  }
+}
