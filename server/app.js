@@ -4,7 +4,6 @@ require('dotenv').config();
 const path = require('path');
 
 const pool = require('./db');
-const tripRoutes = require('../trips.js');
 
 const app = express();
 
@@ -15,7 +14,6 @@ if (!process.env.JWT_SECRET_KEY) {
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/api/trips", tripRoutes);
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/api/health', (req, res) => {
