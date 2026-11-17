@@ -1,0 +1,108 @@
+/* public/css/auth.css  (You Jun)
+   Login, Register, Forgot password and Reset password pages.
+   Bootstrap does the forms and buttons; this file adds the dark side panel
+   and the password strength bar. */
+
+.auth-side {
+  background: #1f1f1e;
+  color: #fff;
+  min-height: 100vh;
+  padding: 3.5rem 3.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-side .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+}
+
+.auth-side h2 {
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: auto 0 1.5rem;
+}
+
+.auth-side ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 auto;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.auth-side li {
+  margin-bottom: 0.7rem;
+  padding-left: 1.4rem;
+  position: relative;
+}
+
+.auth-side li::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: #fff;
+}
+
+.auth-side .placeholder-box {
+  margin-top: 3rem;
+  height: 130px;
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 0.75rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1.25rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Show / Hide button sitting inside the password box */
+.password-toggle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #5f5f5f;
+}
+
+/* Password strength: four segments that fill in */
+.strength {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.5rem;
+}
+
+.strength span {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: #d9d9d4;
+}
+
+.strength[data-level="1"] span:nth-child(-n + 1) { background: #dc3545; }
+.strength[data-level="2"] span:nth-child(-n + 2) { background: #fd7e14; }
+.strength[data-level="3"] span:nth-child(-n + 3) { background: #1f1f1e; }
+.strength[data-level="4"] span:nth-child(-n + 4) { background: #198754; }
+
+/* Narrow screens: hide the dark panel, show the brand above the form instead */
+@media (max-width: 991.98px) {
+  .auth-side {
+    display: none;
+  }
+}

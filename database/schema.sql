@@ -317,3 +317,31 @@ ON public.item_assignment (trip_member_id);
 
 CREATE INDEX IF NOT EXISTS idx_item_assignment_trip
 ON public.item_assignment (trip_id);
+
+-- =====================================================
+-- 8. LOGIN / PASSWORD RESET ADDITIONS
+-- =====================================================
+
+-- Logout and password reset add 1 to this number, which signs out every
+-- token issued before that moment.
+ALTER TABLE public.app_user
+ADD COLUMN IF NOT EXISTS token_version INT NOT NULL DEFAULT 0;
+
+
+-- Password reset requests. Only a hash of the emailed token is stored.
+CREATE TABLE IF NOT EXISTS public.password_reset (
+    reset_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    used_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_password_reset_user
+        FOREIGN KEY (user_id)
+        REFERENCES public.app_user(user_id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_user
+ON public.password_reset (user_id);
