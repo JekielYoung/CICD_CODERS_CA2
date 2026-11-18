@@ -39,7 +39,7 @@ router.get('/:tripId/activities', requireTripAccess(), activity.list);
 router.post('/:tripId/activities', requireTripAccess(), activity.create);
 
 // Saves the day when a user drags a activity (Sprint 3)
-router.patch('/:tripId/activities/reorder', requireTripAccess(), activity.reorder);
+// router.patch('/:tripId/activities/reorder', requireTripAccess(), activity.reorder);
 
 // Update an existing activity details
 router.patch('/:tripId/activities/:activityId', requireTripAccess(), activity.update);

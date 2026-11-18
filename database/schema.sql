@@ -1,8 +1,6 @@
 -- =====================================================
 -- Trip Planner Database (PostgreSQL)
 -- Database Name: trip_planner
--- Fresh installation schema used by npm run init:db.
--- Creates tables/types if absent; does not erase or migrate old tables.
 -- =====================================================
 
 SET search_path TO public;

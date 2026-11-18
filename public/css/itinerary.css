@@ -1,4 +1,5 @@
-/* Orbit itinerary, built on existing Bootstrap base/layout stylesheet */
+/* Orbit itinerary CSS */
+
 
 :root {
   --ink: #232323;
@@ -897,7 +898,6 @@ button:disabled {
   }
 }
 
-/* Screen-specific rules only. Existing base.css, home.css, layout.css remain untouched. */
 .orbit-app {
   --ink: #1f1f1e;
   --muted: #72736f;
@@ -968,7 +968,6 @@ button:disabled {
   }
 }
 
-/* Itinerary-only version: tabs remain visible for future modules. */
 .orbit-app .workspace {
   grid-template-columns: 260px minmax(0, 1fr);
 }
@@ -1163,8 +1162,6 @@ button:disabled {
   box-shadow: 0 0 0 0.2rem rgba(101, 81, 209, 0.16);
 }
 
-/* Modal dialogs intentionally use Orbit-specific names to avoid Bootstrap 5
-   .modal {display:none} and .modal-backdrop stacking behaviour. */
 .orbit-app .orbit-dialog-backdrop {
   position: fixed;
   inset: 0;
@@ -1202,4 +1199,47 @@ button:disabled {
   .orbit-app .orbit-dialog .field-row {
     flex-wrap: wrap;
   }
+}
+
+
+/* =====================================
+   EXPANDABLE ACTIVITY NOTES
+   ===================================== */
+
+.activity-notes {
+  width: 100%;
+  min-width: 0;
+}
+
+.activity-notes .note {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.activity-notes .note.collapsed {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.read-more-btn {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.read-more-btn:hover {
+  text-decoration: underline;
+}
+
+.read-more-btn[hidden] {
+  display: none;
 }

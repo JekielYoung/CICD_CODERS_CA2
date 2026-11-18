@@ -1,112 +1,370 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Orbit | Paris Winter Break</title>
+
+    <title>Orbit | Itinerary</title>
+
+    <!-- Bootstrap CSS -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
     />
+
+    <!-- Itinerary CSS -->
     <link rel="stylesheet" href="./css/itinerary.css" />
-  </head>
-  <body>
-    <div class="orbit-app">
-      <header class="trip-header orbit-navbar navbar bg-white">
+
+</head>
+<body>
+<div class="orbit-app">
+
+    <!-- ====================================== -->
+    <!-- 1. NAVIGATION HEADER                  -->
+    <!-- ====================================== -->
+
+    <header class="trip-header orbit-navbar navbar bg-white">
+
         <div class="brand-area">
-          <div class="brand">
-            <svg class="orbit-mark" viewBox="0 0 34 23" aria-hidden="true">
-              <ellipse
-                cx="17"
-                cy="11.5"
-                rx="14"
-                ry="7"
-                fill="none"
-                stroke="#222"
-                stroke-width="3"
-                transform="rotate(-18 17 11.5)"
-              />
-              <ellipse
-                cx="17"
-                cy="11.5"
-                rx="6"
-                ry="7"
-                fill="#222"
-                transform="rotate(28 17 11.5)"
-              /></svg>Orbit
-          </div>
-          <div class="trip-heading">
-            <strong>Paris Winter Break</strong
-            ><small>14 - 18 Dec 2026 · 5 days · 3 travellers</small>
-          </div>
+
+            <div class="brand">
+
+                <svg
+                    class="orbit-mark"
+                    viewBox="0 0 34 23"
+                    aria-hidden="true"
+                >
+                    <ellipse
+                        cx="17"
+                        cy="11.5"
+                        rx="14"
+                        ry="7"
+                        fill="none"
+                        stroke="#222"
+                        stroke-width="3"
+                        transform="rotate(-18 17 11.5)"
+                    />
+
+                    <ellipse
+                        cx="17"
+                        cy="11.5"
+                        rx="6"
+                        ry="7"
+                        fill="#222"
+                        transform="rotate(28 17 11.5)"
+                    />
+                </svg>
+
+                Orbit
+
+            </div>
+
+            <!-- Trip details loaded from Database -->
+            <div class="trip-heading">
+
+                <strong id="tripTitle">
+                    Loading trip...
+                </strong>
+
+                <small id="tripSubtitle">
+                    Loading trip details...
+                </small>
+
+            </div>
+
         </div>
-        <nav class="trip-nav navbar-nav flex-row" aria-label="Main navigation">
-          <button class="nav-link active" data-tab="itinerary">Itinerary</button
-          ><button class="nav-link" data-tab="packing">Packing</button
-          ><button class="nav-link" data-tab="documents">Documents</button>
-        </nav>
-        <div class="trip-header-right">
-          <div class="avatars" title="3 travellers">
-            <span class="avatar">JD</span><span class="avatar">AK</span
-            ><span class="avatar">ML</span>
-          </div>
-          <button class="btn" id="inviteBtn" type="button">Invite</button>
-        </div>
-      </header>
-      <div class="workspace">
-        <aside class="sidebar">
-          <div class="eyebrow">DAYS</div>
-          <div id="dayLinks" class="day-links"></div>
-          <button id="addDayBtn" class="dashed add-day">+ Add day</button>
-          <div class="status-summary">
-            <div class="eyebrow status-title">
-              STATUS <span class="count-bubble">3</span>
-            </div>
-            <div id="statusSummary"></div>
-          </div>
-        </aside>
-        <main class="main">
-          <section id="itineraryPage">
-            <div class="toolbar">
-              <div class="segmented" id="viewButtons">
-                <button class="active" data-view="columns">Columns</button
-                ><button data-view="list">List</button
-                ><button data-view="calendar">Calendar</button>
-              </div>
-              <select
-                id="statusFilter"
-                class="filter form-select"
-                aria-label="Filter activities by status"
-                title="Filter activities by status"
-              >
-                <option value="all">Status: All</ox ption>
-                <option value="planned">Status: Planned</option>
-                <option value="booked">Status: Booked</option>
-                <option value="completed">Status: Completed</option></select
-              ><span class="toolbar-spacer"></span
-              ><button class="btn btn-dark" id="addActivityBtn">
-                + Add activity
-              </button>
-            </div>
-            <div id="itineraryContent"></div>
-          </section>
-        </main>
-        <aside class="ai-placeholder" aria-label="AI suggestions placeholder">
-          <div class="ai-placeholder-inner">
-            <div class="ai-placeholder-title">
-              <span aria-hidden="true">✦</span> AI Suggestions
-            </div>
-            <p>AI activity suggestions will appear here.</p>
-            <div class="ai-placeholder-skeleton" aria-hidden="true"></div>
-            <div class="ai-placeholder-skeleton short" aria-hidden="true"></div>
-            <button type="button" class="btn ai-placeholder-button" disabled>
-              Coming soon
+
+        <!-- ================================== -->
+        <!-- 2. NAVIGATION TABS                 -->
+        <!-- ================================== -->
+
+        <nav
+            class="trip-nav navbar-nav flex-row"
+            aria-label="Main navigation"
+        >
+
+            <button
+                type="button"
+                class="nav-link active"
+                data-tab="itinerary"
+            >
+                Itinerary
             </button>
-          </div>
+
+            <button
+                type="button"
+                class="nav-link"
+                data-tab="packing"
+            >
+                Packing
+            </button>
+
+            <button
+                type="button"
+                class="nav-link"
+                data-tab="documents"
+            >
+                Documents
+            </button>
+
+        </nav>
+
+        <!-- ================================== -->
+        <!-- 3. TRAVELERS AND INVITE            -->
+        <!-- ================================== -->
+
+        <div class="trip-header-right">
+
+            <!-- Populated by itinerary.js -->
+            <div
+                id="memberAvatars"
+                class="avatars"
+                title="Trip members"
+            ></div>
+
+            <button
+                class="btn"
+                id="inviteBtn"
+                type="button"
+            >
+                Invite
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- ====================================== -->
+    <!-- 4. MAIN WORKSPACE                     -->
+    <!-- ====================================== -->
+
+    <div class="workspace">
+
+        <!-- ================================== -->
+        <!-- 5. LEFT SIDEBAR                    -->
+        <!-- ================================== -->
+
+        <aside class="sidebar">
+
+            <div class="eyebrow">
+                DAYS
+            </div>
+
+            <!-- Days generated from trip start/end dates -->
+            <div
+                id="dayLinks"
+                class="day-links"
+            ></div>
+
+            <button
+                id="addDayBtn"
+                class="dashed add-day"
+                type="button"
+            >
+                + Add day
+            </button>
+
+            <!-- Activity status summary -->
+            <div class="status-summary">
+
+                <div class="eyebrow status-title">
+
+                    STATUS
+
+                    <span class="count-bubble">
+                        0
+                    </span>
+
+                </div>
+
+                <div id="statusSummary"></div>
+
+            </div>
+
         </aside>
-      </div>
-      <div id="modalRoot"></div>
-      <div id="toast" class="orbit-toast hidden" role="status"></div>
+
+        <!-- ================================== -->
+        <!-- 6. ITINERARY MAIN CONTENT         -->
+        <!-- ================================== -->
+
+        <main class="main">
+
+            <section id="itineraryPage">
+
+                <!-- ========================== -->
+                <!-- 7. TOOLBAR                  -->
+                <!-- ========================== -->
+
+                <div class="toolbar">
+
+                    <!-- View selection -->
+                    <div
+                        class="segmented"
+                        id="viewButtons"
+                    >
+
+                        <button
+                            type="button"
+                            class="active"
+                            data-view="columns"
+                        >
+                            Columns
+                        </button>
+
+                        <button
+                            type="button"
+                            data-view="list"
+                        >
+                            List
+                        </button>
+
+                        <button
+                            type="button"
+                            data-view="calendar"
+                        >
+                            Calendar
+                        </button>
+
+                    </div>
+
+                    <!-- Status filter -->
+                    <select
+                        id="statusFilter"
+                        class="filter form-select"
+                        aria-label="Filter activities by status"
+                    >
+
+                        <option value="all">
+                            Status: All
+                        </option>
+
+                        <option value="planned">
+                            Status: Planned
+                        </option>
+
+                        <option value="booked">
+                            Status: Booked
+                        </option>
+
+                        <option value="completed">
+                            Status: Completed
+                        </option>
+
+                    </select>
+
+                    <span class="toolbar-spacer"></span>
+
+                    <!-- Add activity -->
+                    <button
+                        type="button"
+                        class="btn btn-dark"
+                        id="addActivityBtn"
+                    >
+                        + Add activity
+                    </button>
+
+                </div>
+
+                <!-- ========================== -->
+                <!-- 8. ACTIVITY DISPLAY        -->
+                <!-- ========================== -->
+
+                <div id="itineraryContent">
+
+                    <div class="empty-state">
+                        Loading your itinerary...
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- ================================== -->
+        <!-- 9. AI SUGGESTIONS PLACEHOLDER      -->
+        <!-- ================================== -->
+
+        <aside
+            class="ai-placeholder"
+            aria-label="AI suggestions placeholder"
+        >
+
+            <div class="ai-placeholder-inner">
+
+                <div class="ai-placeholder-title">
+
+                    <span aria-hidden="true">
+                        ✦
+                    </span>
+
+                    AI Suggestions
+
+                </div>
+
+                <p>
+                    AI activity suggestions
+                    will appear here.
+                </p>
+
+                <div
+                    class="ai-placeholder-skeleton"
+                    aria-hidden="true"
+                ></div>
+
+                <div
+                    class="ai-placeholder-skeleton short"
+                    aria-hidden="true"
+                ></div>
+
+                <button
+                    type="button"
+                    class="btn ai-placeholder-button"
+                    disabled
+                >
+                    Coming soon
+                </button>
+
+            </div>
+
+        </aside>
+
     </div>
-  </body>
+
+    <!-- ====================================== -->
+    <!-- 10. MODAL CONTAINER                   -->
+    <!-- ====================================== -->
+
+    <!-- Used by Add/Edit Activity and Invite -->
+    <div id="modalRoot"></div>
+
+    <!-- ====================================== -->
+    <!-- 11. NOTIFICATION MESSAGE              -->
+    <!-- ====================================== -->
+
+    <div
+        id="toast"
+        class="orbit-toast hidden"
+        role="status"
+    ></div>
+
+    <!-- ====================================== -->
+    <!-- 12. CURRENT USER ID                   -->
+    <!-- ====================================== -->
+
+    <!-- Used to check whether user owns trip -->
+    <input
+        type="hidden"
+        id="currentUserId"
+        value=""
+    />
+
+</div>
+
+<!-- ========================================== -->
+<!-- 13. JAVASCRIPT                             -->
+<!-- ========================================== -->
+
+<script src="./js/itinerary.js"></script>
+</body>
 </html>
