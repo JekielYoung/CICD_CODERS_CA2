@@ -19,6 +19,11 @@ const documentError = document.getElementById('document-error');
 const documentEmpty = document.getElementById('document-empty');
 const documentList = document.getElementById('document-list');
 
+const fileInput = document.getElementById('file-input');
+const uploadFileBtn = document.getElementById('upload-file-btn');
+const emptyUploadFileBtn = document.getElementById('empty-upload-file-btn');
+const uploadStatus = document.getElementById('upload-status');
+
 // Validate trip ID
 if (!Number.isInteger(trip_id) || trip_id <= 0) {
     documentError.textContent = 'Invalid trip ID.';
@@ -34,10 +39,11 @@ if (!Number.isInteger(trip_id) || trip_id <= 0) {
 async function loadTripDetails() {
     try {
         // Replace this endpoint with your actual trip retrieval endpoint
-        const response = await fetch(`/api/trip/${trip_id}`, {
-            credentials: 'include'
-        });
-
+        const response = await fetch(`/api/trip/${trip_id}`,
+            {
+                credentials: 'include'
+            }
+        );
         if (!response.ok) {
             throw new Error('Failed to retrieve trip information');
         }
@@ -46,33 +52,25 @@ async function loadTripDetails() {
 
         // Adjust this depending on your actual API response structure
         const trip = result.trip;
-
         if (!trip) {
             throw new Error('Trip information not found');
         }
 
         // Display trip information
         tripName.textContent = trip.title;
-
         const startDate = new Date(trip.start_date);
         const endDate = new Date(trip.end_date);
-
         const dateOptions = {
             day: 'numeric',
             month: 'short',
             year: 'numeric'
         };
 
-        tripDates.textContent =
-            `${startDate.toLocaleDateString('en-GB', dateOptions)} - ` +
-            `${endDate.toLocaleDateString('en-GB', dateOptions)}`;
-
-        const duration =
-            Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        tripDates.textContent = `${startDate.toLocaleDateString('en-GB', dateOptions)} - ` + `${endDate.toLocaleDateString('en-GB', dateOptions)}`;
+        const duration = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
         tripDuration.textContent = `${duration} days`;
         tripTravellers.textContent = `${trip.traveller_count} travellers`;
-
     } catch (error) {
         console.error('Error loading trip details:', error);
         tripName.textContent = 'Unable to load trip information';
@@ -82,32 +80,35 @@ async function loadTripDetails() {
 
 // Fetch documents belonging to the trip
 async function loadDocuments() {
+    documentError.classList.add('d-none');
+    documentEmpty.classList.add('d-none');
+    documentList.classList.add('d-none');
+    documentLoading.classList.remove('d-none');
     try {
         const response = await fetch(`/api/document/${trip_id}`, {
             credentials: 'include'
         });
-
         if (!response.ok) {
             throw new Error('Failed to retrieve documents');
         }
 
         const result = await response.json();
-
         if (!result.success) {
             throw new Error(result.message || 'Failed to retrieve documents');
         }
 
         const documents = result.documents;
-
         // Update document count
-        documentCount.textContent =
-            `${documents.length} ${documents.length === 1 ? 'file' : 'files'}`;
+        documentCount.textContent = `${documents.length} ${documents.length === 1
+            ? 'file'
+            : 'files'
+        }`;
 
         // Storage usage cannot be calculated from the current document schema
         storageUsage.textContent = 'Storage usage unavailable';
-
         // Remove loading indicator
         documentLoading.classList.add('d-none');
+        documentList.replaceChildren();
 
         // Display empty state if there are no documents
         if (documents.length === 0) {
@@ -122,8 +123,6 @@ async function loadDocuments() {
         documentEmpty.classList.remove('d-flex');
         documentList.classList.remove('d-none');
 
-        documentList.replaceChildren();
-
         documents.forEach(doc => {
             createDocumentCard(doc);
         });
@@ -132,8 +131,7 @@ async function loadDocuments() {
         console.error('Error loading documents:', error);
 
         documentLoading.classList.add('d-none');
-        documentError.textContent =
-            'Unable to retrieve documents. Please try again.';
+        documentError.textContent = 'Unable to retrieve documents. Please try again.';
         documentError.classList.remove('d-none');
     }
 }
@@ -167,7 +165,6 @@ function createDocumentCard(doc) {
     uploaded.className = 'text-secondary';
 
     const uploadedDate = new Date(doc.uploaded_at);
-
     uploaded.textContent = Number.isNaN(uploadedDate.getTime())
         ? 'Upload date unavailable'
         : `Uploaded ${uploadedDate.toLocaleDateString('en-GB', {
@@ -178,7 +175,7 @@ function createDocumentCard(doc) {
 
     // View document link
     const link = document.createElement('a');
-    link.className = 'btn btn-outline-dark btn-sm mt-auto align-self-start';
+    link.className = 'btn btn-outline-dark btn-sm';
     link.textContent = 'View document';
 
     // Validate document URL
@@ -198,10 +195,145 @@ function createDocumentCard(doc) {
         link.classList.add('disabled');
     }
 
+    // Delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'btn btn-outline-danger btn-sm';
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.addEventListener('click', () => {
+        deleteDocument(doc.document_id, doc.file_name);
+    });
+
+    // Action buttons
+    const actions = document.createElement('div');
+    actions.className = 'd-flex gap-2 mt-auto';
+    actions.append(link, deleteBtn);
+
+    // Validate document URL
+    try {
+        const url = new URL(doc.file_url, window.location.origin);
+
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+            link.href = url.href;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+        } else {
+            link.textContent = 'Invalid document URL';
+            link.classList.add('disabled');
+        }
+    } catch {
+        link.textContent = 'Invalid document URL';
+        link.classList.add('disabled');
+    }
+
     // Assemble card
-    cardBody.append(type, name, uploaded, link);
+    cardBody.append(type, name, uploaded, actions);
     card.appendChild(cardBody);
     column.appendChild(card);
 
     documentList.appendChild(column);
+}
+
+// Open file selection window
+uploadFileBtn.addEventListener('click', () => {
+    fileInput.click();
+});
+
+emptyUploadFileBtn.addEventListener('click', () => {
+    fileInput.click();
+});
+
+// Handle file selection
+fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) {
+        return;
+    }
+
+    await uploadDocument(file);
+    // Reset file input so the same file can be selected again
+    fileInput.value = '';
+});
+
+// Upload document
+async function uploadDocument(file) {
+    const maxSize = 10 * 1024 * 1024; // 10 MB
+    if (file.size > maxSize) {
+        showUploadStatus('File exceeds the 10 MB limit.', 'danger');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    // Temporary default document type
+    formData.append('document_type', 'Others');
+
+    try {
+        showUploadStatus('Uploading document...', 'info');
+
+        const response = await fetch(`/api/document/${trip_id}/upload`,
+            {
+                method: 'POST',
+                credentials: 'include',
+                body: formData
+            }
+        );
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Upload failed');
+        }
+
+        showUploadStatus('Document uploaded successfully!', 'success');
+        // Refresh document list
+        await loadDocuments();
+    } catch (error) {
+        console.error('Error uploading document:', error);
+
+        showUploadStatus(
+            error.message || 'Failed to upload document.',
+            'danger'
+        );
+    }
+}
+
+// Delete document
+async function deleteDocument(document_id, file_name) {
+    const confirmed = confirm(`Are you sure you want to delete "${file_name}"?`);
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/document/${trip_id}/${document_id}`,
+            {
+                method: 'DELETE',
+                credentials: 'include'
+            }
+        );
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Failed to delete document');
+        }
+
+        showUploadStatus('Document deleted successfully!', 'success');
+
+        // Refresh the document list
+        await loadDocuments();
+    } catch (error) {
+        console.error('Error deleting document:', error);
+
+        showUploadStatus(
+            error.message || 'Failed to delete document.',
+            'danger'
+        );
+    }
+}
+
+// Display upload status
+function showUploadStatus(message, type) {
+    uploadStatus.textContent = message;
+    uploadStatus.className = `alert alert-${type} mt-3`;
+    uploadStatus.classList.remove('d-none');
 }

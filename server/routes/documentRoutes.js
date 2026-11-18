@@ -1,6 +1,56 @@
 const express = require('express');
 const router = express.Router();
+
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
 const documentModel = require('../models/documentModel');
+// Upload directory
+const uploadDirectory = path.join(__dirname, '../uploads/documents');
+
+// Create directory if it doesn't exist
+fs.mkdirSync(uploadDirectory, { recursive: true });
+
+// Configure storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDirectory);
+    },
+
+    filename: (req, file, cb) => {
+        const extension = path.extname(file.originalname).toLowerCase();
+
+        // Generate a unique filename to prevent collisions
+        const uniqueName = `${Date.now()}-${require('crypto').randomUUID()}${extension}`;
+
+        cb(null, uniqueName);
+    }
+});
+
+// Configure upload middleware
+const upload = multer({
+    storage,
+
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10 MB
+    },
+
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = [
+            'application/pdf',
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ];
+
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Unsupported file type'));
+        }
+    }
+});
 
 // Validate route parameters
 const validateIds = (trip_id, document_id = null) => {
@@ -77,6 +127,78 @@ router.get('/:trip_id/:document_id', async (req, res) => {
         return res.status(500).json({
             success: false,
             message: 'Failed to retrieve document'
+        });
+    }
+});
+
+// POST: Upload a physical document file
+router.post('/:trip_id/upload', upload.single('file'), async (req, res) => {
+    const trip_id = Number(req.params.trip_id);
+
+    if (!validateIds(trip_id)) {
+        // Remove uploaded file if trip ID is invalid
+        if (req.file) {
+            fs.unlink(req.file.path, () => {});
+        }
+
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid trip ID'
+        });
+    }
+
+    if (!req.file) {
+        return res.status(400).json({
+            success: false,
+            message: 'No file uploaded'
+        });
+    }
+
+    const { document_type } = req.body;
+
+    const allowedDocumentTypes = [
+        'Flight Ticket',
+        'Hotel Booking',
+        'Passport Copy',
+        'Visa',
+        'Others'
+    ];
+
+    if (!allowedDocumentTypes.includes(document_type)) {
+        fs.unlink(req.file.path, () => {});
+
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid document type'
+        });
+    }
+
+    try {
+        // Generate URL for the uploaded file
+        const file_url = `/uploads/documents/${req.file.filename}`;
+
+        // Save file details into database
+        const document = await documentModel.create({
+            trip_id,
+            file_name: req.file.originalname,
+            file_url,
+            document_type
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: 'File uploaded successfully',
+            document
+        });
+    } catch (error) {
+        // Remove uploaded file if database insertion fails
+        fs.unlink(req.file.path, () => {});
+
+        console.error('Error uploading document:', error);
+
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to upload document'
         });
     }
 });
@@ -172,7 +294,7 @@ router.put('/:trip_id/:document_id', async (req, res) => {
     }
 });
 
-// DELETE: Delete a document record
+// DELETE: Delete a document and its physical file
 router.delete('/:trip_id/:document_id', async (req, res) => {
     const trip_id = Number(req.params.trip_id);
     const document_id = Number(req.params.document_id);
@@ -185,19 +307,51 @@ router.delete('/:trip_id/:document_id', async (req, res) => {
     }
 
     try {
-        const document = await documentModel.delete(trip_id, document_id);
+        // Retrieve document before deleting it
+        const existingDocument = await documentModel.findById(
+            trip_id,
+            document_id
+        );
 
-        if (!document) {
+        if (!existingDocument) {
             return res.status(404).json({
                 success: false,
                 message: 'Document not found'
             });
         }
 
+        // Delete database record
+        const deletedDocument = await documentModel.delete(
+            trip_id,
+            document_id
+        );
+
+        if (!deletedDocument) {
+            return res.status(404).json({
+                success: false,
+                message: 'Document not found'
+            });
+        }
+
+        // Remove physical file if it is stored locally
+        const fileUrl = existingDocument.file_url;
+
+        if (fileUrl && fileUrl.startsWith('/uploads/documents/')) {
+            const filename = path.basename(fileUrl);
+            const filePath = path.join(uploadDirectory, filename);
+
+            try {
+                await fs.promises.unlink(filePath);
+            } catch (fileError) {
+                // Record is deleted but file removal failed
+                console.error('Unable to remove physical file:', fileError);
+            }
+        }
+
         return res.status(200).json({
             success: true,
             message: 'Document deleted successfully',
-            document_id: document.document_id
+            document_id: deletedDocument.document_id
         });
     } catch (error) {
         console.error('Error deleting document:', error);
