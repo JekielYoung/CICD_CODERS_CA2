@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
-
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
 const documentModel = require('../models/documentModel');
-// Upload directory
 const uploadDirectory = path.join(__dirname, '../uploads/documents');
+
+// Authenticate user before every endpoint
+const requireAuth = require('../middleware/requireAuth');
+const requireTripAccess = require('../middleware/requireTripAccess');
+router.use(requireAuth);
 
 // Create directory if it doesn't exist
 fs.mkdirSync(uploadDirectory, { recursive: true });
@@ -67,10 +70,10 @@ const validateIds = (trip_id, document_id = null) => {
 };
 
 // GET: Retrieve all documents belonging to a trip
-router.get('/:trip_id', async (req, res) => {
-    const trip_id = Number(req.params.trip_id);
+router.get('/:tripId', requireTripAccess(), async (req, res) => {
+    const tripId = Number(req.params.tripId);
 
-    if (!validateIds(trip_id)) {
+    if (!validateIds(tripId)) {
         return res.status(400).json({
             success: false,
             message: 'Invalid trip ID'
@@ -78,7 +81,7 @@ router.get('/:trip_id', async (req, res) => {
     }
 
     try {
-        const documents = await documentModel.findByTripId(trip_id);
+        const documents = await documentModel.findByTripId(tripId);
 
         return res.status(200).json({
             success: true,
@@ -96,11 +99,11 @@ router.get('/:trip_id', async (req, res) => {
 });
 
 // GET: Retrieve a specific document
-router.get('/:trip_id/:document_id', async (req, res) => {
-    const trip_id = Number(req.params.trip_id);
-    const document_id = Number(req.params.document_id);
+router.get('/:tripId/:documentId', requireTripAccess(), async (req, res) => {
+    const tripId = Number(req.params.tripId);
+    const documentId = Number(req.params.documentId);
 
-    if (!validateIds(trip_id, document_id)) {
+    if (!validateIds(tripId, documentId)) {
         return res.status(400).json({
             success: false,
             message: 'Invalid trip ID or document ID'
@@ -108,7 +111,7 @@ router.get('/:trip_id/:document_id', async (req, res) => {
     }
 
     try {
-        const document = await documentModel.findById(trip_id, document_id);
+        const document = await documentModel.findById(tripId, documentId);
 
         if (!document) {
             return res.status(404).json({
@@ -132,10 +135,10 @@ router.get('/:trip_id/:document_id', async (req, res) => {
 });
 
 // POST: Upload a physical document file
-router.post('/:trip_id/upload', upload.single('file'), async (req, res) => {
-    const trip_id = Number(req.params.trip_id);
+router.post('/:tripId/upload', requireTripAccess(), upload.single('file'), async (req, res) => {
+    const tripId = Number(req.params.tripId);
 
-    if (!validateIds(trip_id)) {
+    if (!validateIds(tripId)) {
         // Remove uploaded file if trip ID is invalid
         if (req.file) {
             fs.unlink(req.file.path, () => {});
@@ -179,7 +182,7 @@ router.post('/:trip_id/upload', upload.single('file'), async (req, res) => {
 
         // Save file details into database
         const document = await documentModel.create({
-            trip_id,
+            trip_id: tripId,
             file_name: req.file.originalname,
             file_url,
             document_type
@@ -204,11 +207,11 @@ router.post('/:trip_id/upload', upload.single('file'), async (req, res) => {
 });
 
 // POST: Create a document record
-router.post('/:trip_id', async (req, res) => {
-    const trip_id = Number(req.params.trip_id);
+router.post('/:tripId', requireTripAccess(), async (req, res) => {
+    const tripId = Number(req.params.tripId);
     const { file_name, file_url, document_type } = req.body;
 
-    if (!validateIds(trip_id)) {
+    if (!validateIds(tripId)) {
         return res.status(400).json({
             success: false,
             message: 'Invalid trip ID'
@@ -224,7 +227,7 @@ router.post('/:trip_id', async (req, res) => {
 
     try {
         const document = await documentModel.create({
-            trip_id,
+            trip_id: tripId,
             file_name,
             file_url,
             document_type
@@ -246,12 +249,12 @@ router.post('/:trip_id', async (req, res) => {
 });
 
 // PUT: Update a document record
-router.put('/:trip_id/:document_id', async (req, res) => {
-    const trip_id = Number(req.params.trip_id);
-    const document_id = Number(req.params.document_id);
+router.put('/:tripId/:documentId', requireTripAccess(), async (req, res) => {
+    const tripId = Number(req.params.tripId);
+    const documentId = Number(req.params.documentId);
     const { file_name, file_url, document_type } = req.body;
 
-    if (!validateIds(trip_id, document_id)) {
+    if (!validateIds(tripId, documentId)) {
         return res.status(400).json({
             success: false,
             message: 'Invalid trip ID or document ID'
@@ -267,8 +270,8 @@ router.put('/:trip_id/:document_id', async (req, res) => {
 
     try {
         const document = await documentModel.update(
-            trip_id,
-            document_id,
+            tripId,
+            documentId,
             { file_name, file_url, document_type }
         );
 
@@ -295,11 +298,11 @@ router.put('/:trip_id/:document_id', async (req, res) => {
 });
 
 // DELETE: Delete a document and its associated file
-router.delete('/:trip_id/:document_id', async (req, res) => {
-    const trip_id = Number(req.params.trip_id);
-    const document_id = Number(req.params.document_id);
+router.delete('/:tripId/:documentId', requireTripAccess(), async (req, res) => {
+    const tripId = Number(req.params.tripId);
+    const documentId = Number(req.params.documentId);
 
-    if (!validateIds(trip_id, document_id)) {
+    if (!validateIds(tripId, documentId)) {
         return res.status(400).json({
             success: false,
             message: 'Invalid trip ID or document ID'
@@ -308,8 +311,8 @@ router.delete('/:trip_id/:document_id', async (req, res) => {
 
     try {
         const document = await documentModel.delete(
-            trip_id,
-            document_id
+            tripId,
+            documentId
         );
 
         if (!document) {

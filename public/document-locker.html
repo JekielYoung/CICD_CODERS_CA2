@@ -128,37 +128,29 @@
 
   <!-- Upload Document Modal -->
   <div class="modal fade" id="upload-document-modal" tabindex="-1" aria-labelledby="upload-document-modal-label" aria-hidden="true">
-
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-
         <!-- Modal header -->
         <div class="modal-header">
           <h5 class="modal-title" id="upload-document-modal-label">
             Upload document
           </h5>
-
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-
         <!-- Modal body -->
         <div class="modal-body">
-
           <p class="text-secondary small mb-3">
             Select a category for your document before uploading.
           </p>
-
           <!-- Selected file -->
           <div class="border rounded p-3 mb-3">
             <div class="fw-medium" id="selected-file-name"></div>
             <small class="text-secondary" id="selected-file-size"></small>
           </div>
-
           <!-- Document type -->
           <label for="document-type-select" class="form-label">
             Document type
           </label>
-
           <select class="form-select" id="document-type-select">
             <option value="" selected disabled>Select document type</option>
             <option value="Flight Ticket">Flight Ticket</option>
@@ -167,22 +159,17 @@
             <option value="Visa">Visa</option>
             <option value="Others">Others</option>
           </select>
-
           <div id="upload-modal-error" class="text-danger small mt-2 d-none"></div>
-
         </div>
-
         <!-- Modal footer -->
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">
             Cancel
           </button>
-
           <button type="button" class="btn btn-dark" id="confirm-upload-btn">
             Upload
           </button>
         </div>
-
       </div>
     </div>
   </div>

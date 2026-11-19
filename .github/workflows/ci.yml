@@ -1,0 +1,63 @@
+# Save as .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  # db.js reads these. Values are for the throwaway CI database only.
+  DB_HOST: localhost
+  DB_PORT: 5432
+  DB_USER: postgres
+  DB_PASSWORD: postgres
+  DB_NAME: trip_planner
+  JWT_SECRET_KEY: ci-only-secret
+  NODE_ENV: test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: trip_planner
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generated and secret files must not be committed
+        run: |
+          if git ls-files | grep -q '^node_modules/'; then
+            echo "node_modules is tracked by git. Run: git rm -r --cached node_modules"
+            exit 1
+          fi
+          if git ls-files | grep -qE '(^|/)\.env$'; then
+            echo ".env is tracked by git. Remove it from git and rotate any secrets in it."
+            exit 1
+          fi
+          if git ls-files | grep -q '^server/uploads/'; then
+            echo "Uploaded files are tracked by git. Run: git rm -r --cached server/uploads"
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Create tables
+        run: npm run db:init
+      - name: Run API tests
+        run: npm test
