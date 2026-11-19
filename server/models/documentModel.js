@@ -61,7 +61,7 @@ exports.delete = async (trip_id, document_id) => {
     const { rows } = await db.query(
         `DELETE FROM document
          WHERE trip_id = $1 AND document_id = $2
-         RETURNING document_id`,
+         RETURNING document_id, file_url`,
         [trip_id, document_id]
     );
 

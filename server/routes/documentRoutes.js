@@ -294,7 +294,7 @@ router.put('/:trip_id/:document_id', async (req, res) => {
     }
 });
 
-// DELETE: Delete a document and its physical file
+// DELETE: Delete a document and its associated file
 router.delete('/:trip_id/:document_id', async (req, res) => {
     const trip_id = Number(req.params.trip_id);
     const document_id = Number(req.params.document_id);
@@ -307,51 +307,47 @@ router.delete('/:trip_id/:document_id', async (req, res) => {
     }
 
     try {
-        // Retrieve document before deleting it
-        const existingDocument = await documentModel.findById(
+        const document = await documentModel.delete(
             trip_id,
             document_id
         );
 
-        if (!existingDocument) {
+        if (!document) {
             return res.status(404).json({
                 success: false,
                 message: 'Document not found'
             });
         }
 
-        // Delete database record
-        const deletedDocument = await documentModel.delete(
-            trip_id,
-            document_id
-        );
+        // Remove the physical file
+        const uploadPrefix = '/uploads/documents/';
 
-        if (!deletedDocument) {
-            return res.status(404).json({
-                success: false,
-                message: 'Document not found'
-            });
-        }
+        if (document.file_url.startsWith(uploadPrefix)) {
+            const filename = path.basename(document.file_url);
 
-        // Remove physical file if it is stored locally
-        const fileUrl = existingDocument.file_url;
-
-        if (fileUrl && fileUrl.startsWith('/uploads/documents/')) {
-            const filename = path.basename(fileUrl);
-            const filePath = path.join(uploadDirectory, filename);
+            const filePath = path.join(
+                __dirname,
+                '..',
+                'uploads',
+                'documents',
+                filename
+            );
 
             try {
                 await fs.promises.unlink(filePath);
             } catch (fileError) {
-                // Record is deleted but file removal failed
-                console.error('Unable to remove physical file:', fileError);
+                if (fileError.code !== 'ENOENT') {
+                    console.error('Error deleting uploaded file:', fileError);
+                } else {
+                    console.error('Error:', fileError)
+                }
             }
         }
 
         return res.status(200).json({
             success: true,
             message: 'Document deleted successfully',
-            document_id: deletedDocument.document_id
+            document_id: document.document_id
         });
     } catch (error) {
         console.error('Error deleting document:', error);

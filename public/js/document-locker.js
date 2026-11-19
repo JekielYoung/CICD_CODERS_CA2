@@ -18,11 +18,23 @@ const documentLoading = document.getElementById('document-loading');
 const documentError = document.getElementById('document-error');
 const documentEmpty = document.getElementById('document-empty');
 const documentList = document.getElementById('document-list');
+const documentTypeSelect = document.getElementById('document-type-select');
 
+// Upload elements
 const fileInput = document.getElementById('file-input');
 const uploadFileBtn = document.getElementById('upload-file-btn');
 const emptyUploadFileBtn = document.getElementById('empty-upload-file-btn');
+const confirmUploadBtn = document.getElementById('confirm-upload-btn');
 const uploadStatus = document.getElementById('upload-status');
+const selectedFileName = document.getElementById('selected-file-name');
+const selectedFileSize = document.getElementById('selected-file-size');
+
+const uploadModalElement = document.getElementById('upload-document-modal');
+const uploadModal = new bootstrap.Modal(uploadModalElement);
+const uploadModalError = document.getElementById('upload-modal-error');
+
+// Store the currently selected file
+let selectedFile = null;
 
 // Validate trip ID
 if (!Number.isInteger(trip_id) || trip_id <= 0) {
@@ -244,29 +256,41 @@ emptyUploadFileBtn.addEventListener('click', () => {
 });
 
 // Handle file selection
-fileInput.addEventListener('change', async () => {
+fileInput.addEventListener('change', () => {
     const file = fileInput.files[0];
     if (!file) {
         return;
     }
 
-    await uploadDocument(file);
-    // Reset file input so the same file can be selected again
-    fileInput.value = '';
+    // Store the selected file for later upload
+    selectedFile = file;
+
+    // Display the selected file's information
+    selectedFileName.textContent = file.name;
+    selectedFileSize.textContent = formatFileSize(file.size);
+
+    // Reset the document type selection
+    documentTypeSelect.value = '';
+
+    // Reset any previous modal errors
+    uploadModalError.textContent = '';
+    uploadModalError.classList.add('d-none');
+
+    // Display the upload modal
+    uploadModal.show();
 });
 
 // Upload document
-async function uploadDocument(file) {
+async function uploadDocument(file, document_type) {
     const maxSize = 10 * 1024 * 1024; // 10 MB
     if (file.size > maxSize) {
         showUploadStatus('File exceeds the 10 MB limit.', 'danger');
-        return;
+        return false;
     }
 
     const formData = new FormData();
     formData.append('file', file);
-    // Temporary default document type
-    formData.append('document_type', 'Others');
+    formData.append('document_type', document_type);
 
     try {
         showUploadStatus('Uploading document...', 'info');
@@ -287,6 +311,7 @@ async function uploadDocument(file) {
         showUploadStatus('Document uploaded successfully!', 'success');
         // Refresh document list
         await loadDocuments();
+        return true;
     } catch (error) {
         console.error('Error uploading document:', error);
 
@@ -294,6 +319,7 @@ async function uploadDocument(file) {
             error.message || 'Failed to upload document.',
             'danger'
         );
+        return false;
     }
 }
 
@@ -337,3 +363,60 @@ function showUploadStatus(message, type) {
     uploadStatus.className = `alert alert-${type} mt-3`;
     uploadStatus.classList.remove('d-none');
 }
+
+// Format file size
+function formatFileSize(size) {
+    if (size < 1024) {
+        return `${size} B`;
+    }
+    if (size < 1024 * 1024) {
+        return `${(size / 1024).toFixed(2)} KB`;
+    }
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+// Confirm upload from modal
+confirmUploadBtn.addEventListener('click', async () => {
+    if (!selectedFile) {
+        uploadModalError.textContent = 'Please select a file.';
+        uploadModalError.classList.remove('d-none');
+        return;
+    }
+
+    const document_type = documentTypeSelect.value;
+
+    if (!document_type) {
+        uploadModalError.textContent = 'Please select a document type.';
+        uploadModalError.classList.remove('d-none');
+        return;
+    }
+
+    // Prevent repeated uploads while processing
+    confirmUploadBtn.disabled = true;
+    confirmUploadBtn.textContent = 'Uploading...';
+
+    const success = await uploadDocument(selectedFile, document_type);
+
+    if (success) {
+        uploadModal.hide();
+
+        selectedFile = null;
+        fileInput.value = '';
+    }
+
+    confirmUploadBtn.disabled = false;
+    confirmUploadBtn.textContent = 'Upload';
+});
+
+// Reset modal when closed
+uploadModalElement.addEventListener('hidden.bs.modal', () => {
+    selectedFile = null;
+    fileInput.value = '';
+    documentTypeSelect.value = '';
+
+    uploadModalError.textContent = '';
+    uploadModalError.classList.add('d-none');
+
+    confirmUploadBtn.disabled = false;
+    confirmUploadBtn.textContent = 'Upload';
+});
