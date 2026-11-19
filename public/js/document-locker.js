@@ -50,10 +50,14 @@ if (!Number.isInteger(trip_id) || trip_id <= 0) {
 // Fetch trip information
 async function loadTripDetails() {
     try {
-        // Replace this endpoint with your actual trip retrieval endpoint
-        const response = await fetch(`/api/trip/${trip_id}`,
+        const token = localStorage.getItem('orbit_token');
+        const response = await fetch(`/api/trips/${trip_id}`,
             {
-                credentials: 'include'
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             }
         );
         if (!response.ok) {
@@ -82,7 +86,7 @@ async function loadTripDetails() {
         const duration = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
         tripDuration.textContent = `${duration} days`;
-        tripTravellers.textContent = `${trip.traveller_count} travellers`;
+        tripTravellers.textContent = `${trip.traveler_count} travellers`;
     } catch (error) {
         console.error('Error loading trip details:', error);
         tripName.textContent = 'Unable to load trip information';
@@ -97,9 +101,16 @@ async function loadDocuments() {
     documentList.classList.add('d-none');
     documentLoading.classList.remove('d-none');
     try {
-        const response = await fetch(`/api/document/${trip_id}`, {
-            credentials: 'include'
-        });
+        const token = localStorage.getItem('orbit_token');
+        const response = await fetch(`/api/document/${trip_id}`,
+            {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
         if (!response.ok) {
             throw new Error('Failed to retrieve documents');
         }
@@ -295,10 +306,14 @@ async function uploadDocument(file, document_type) {
     try {
         showUploadStatus('Uploading document...', 'info');
 
+        const token = localStorage.getItem('orbit_token');
         const response = await fetch(`/api/document/${trip_id}/upload`,
             {
                 method: 'POST',
                 credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
                 body: formData
             }
         );
@@ -331,10 +346,14 @@ async function deleteDocument(document_id, file_name) {
     }
 
     try {
+        const token = localStorage.getItem('orbit_token');
         const response = await fetch(`/api/document/${trip_id}/${document_id}`,
             {
                 method: 'DELETE',
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             }
         );
 

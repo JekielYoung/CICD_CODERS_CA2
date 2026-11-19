@@ -9,8 +9,8 @@ const uploadDirectory = path.join(__dirname, '../uploads/documents');
 
 // Authenticate user before every endpoint
 const requireAuth = require('../middleware/requireAuth');
-const requireTripAccess = require('../middleware/requireTripAccess');
 router.use(requireAuth);
+const requireTripAccess = require('../middleware/requireTripAccess');
 
 // Create directory if it doesn't exist
 fs.mkdirSync(uploadDirectory, { recursive: true });
