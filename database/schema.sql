@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS public.app_user (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    token_version INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -116,6 +117,7 @@ CREATE TABLE IF NOT EXISTS public.trip (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     description TEXT,
+    traveler_count INT NOT NULL DEFAULT 1,
     is_public BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -125,7 +127,10 @@ CREATE TABLE IF NOT EXISTS public.trip (
         ON DELETE CASCADE,
 
     CONSTRAINT chk_trip_dates
-        CHECK (end_date >= start_date)
+        CHECK (end_date >= start_date),
+
+    CONSTRAINT chk_trip_traveler_count
+        CHECK (traveler_count BETWEEN 1 AND 100)
 );
 
 CREATE INDEX IF NOT EXISTS idx_trip_user
@@ -319,14 +324,10 @@ CREATE INDEX IF NOT EXISTS idx_item_assignment_trip
 ON public.item_assignment (trip_id);
 
 -- =====================================================
--- 8. LOGIN / PASSWORD RESET ADDITIONS
+-- 8. PASSWORD RESET
 -- =====================================================
 
--- Logout and password reset add 1 to this number, which signs out every
--- token issued before that moment.
-ALTER TABLE public.app_user
-ADD COLUMN IF NOT EXISTS token_version INT NOT NULL DEFAULT 0;
-
+-- token_version is defined directly in app_user for fresh installations.
 
 -- Password reset requests. Only a hash of the emailed token is stored.
 CREATE TABLE IF NOT EXISTS public.password_reset (
