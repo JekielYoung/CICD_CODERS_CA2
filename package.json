@@ -3,6 +3,7 @@
     "start": "node server/app.js",
     "dev": "nodemon server/app.js",
     "db:init": "node database/init_tables.js",
+    "db:init:test": "node database/init_tables.js --test",
     "test": "jest tests/api --runInBand",
     "test:e2e": "playwright test tests/e2e"
   },

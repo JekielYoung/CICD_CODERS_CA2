@@ -346,3 +346,34 @@ CREATE TABLE IF NOT EXISTS public.password_reset (
 
 CREATE INDEX IF NOT EXISTS idx_password_reset_user
 ON public.password_reset (user_id);
+
+
+-- =====================================================
+-- 9. PACKING CHECKLIST ADDITIONS  (Member 3)
+-- =====================================================
+
+-- Who added the item. The trip owner may delete any item on the trip; everyone
+-- else may delete only the items they added themselves.
+-- SET NULL, not CASCADE: if an account is removed the item stays on the list and
+-- simply loses its author, so the rest of the group does not lose packing entries.
+ALTER TABLE public.packing_item
+ADD COLUMN IF NOT EXISTS created_by INT;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'fk_packing_item_created_by'
+          AND conrelid = 'public.packing_item'::regclass
+    ) THEN
+        ALTER TABLE public.packing_item
+        ADD CONSTRAINT fk_packing_item_created_by
+            FOREIGN KEY (created_by)
+            REFERENCES public.app_user(user_id)
+            ON DELETE SET NULL;
+    END IF;
+END
+$$;
+
+CREATE INDEX IF NOT EXISTS idx_packing_item_created_by
+ON public.packing_item (created_by);

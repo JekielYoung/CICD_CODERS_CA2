@@ -5,6 +5,7 @@ const path = require('path');
 const multer = require('multer');
 
 const pool = require('./db');
+const { serverError } = require('./utils/errors');
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.use('/api/auth', require('./routes/authRoutes.js'));
 app.use('/api/trips', require('./routes/tripsRoutes'));
 // app.use('/api/activities', require('./routes/activities.routes'));
 app.use('/api/document', require('./routes/documentRoutes.js'));
+
+app.use('/api', require('./routes/packingRoutes.js'));  
 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Not found' });
