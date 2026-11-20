@@ -1021,8 +1021,6 @@
         window.location.href = `document-locker.html?tripId=${tripId}`;
         return;
       }
-
-
       if (d.tab !== "itinerary") {
         toast(d.tab + " is not implemented yet.");
         return;
