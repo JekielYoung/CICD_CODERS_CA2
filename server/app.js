@@ -22,7 +22,7 @@ app.get('/api/health', (req, res) => {
 
 // API routes: uncomment each line as its file is added
 app.use('/api/auth', require('./routes/authRoutes.js'));
-// app.use('/api/trips', require('./routes/trips.routes'));
+app.use('/api/trips', require('./routes/tripsRoutes'));
 // app.use('/api/activities', require('./routes/activities.routes'));
 
 app.use('/api', require('./routes/packingRoutes.js'));  
