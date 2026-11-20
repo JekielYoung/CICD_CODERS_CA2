@@ -1,28 +1,34 @@
-// Author: Pyae Phyo Maung 
+// Author: Pyae Phyo Maung ( Luis )
 // Student ID: 2535128
 // Class: DIT/2B/02
 
 const Packing = require('../models/packingModel');
 
-// Must match the packing_category enum in database/schema.sql
+// Available categories that must match the database enum
 const CATEGORIES = ['Clothing', 'Electronics', 'Toiletries', 'Documents', 'Others'];
+
+// Validation limits
 const NAME_MAX = 255;
 const MAX_ITEMS_PER_TRIP = 200;
-const MAX_ID = 2147483647; // largest value of a PostgreSQL INT
+const MAX_ID = 2147483647; // Maximum PostgreSQL INT value
 
-// characters are invisible once stored and corrupt any later CSV or PDF export.
+// Prevent invisible control characters from being stored
 const CONTROL_CHARS = /[\u0000-\u001F\u007F]/;
-// Zero-width characters survive trim(), so " ​ " would pass as a name
+
+
+// Remove zero-width characters that cannot be seen by users
 const ZERO_WIDTH = /[​-‍⁠﻿]/g;
 
-// "12" -> 12. Anything else (abc, -1, 0, 1.5, 99999999999) -> null
+// Convert a value into a valid ID number
+// Returns null if the format is invalid
 function parseId(value) {
   if (!/^\d+$/.test(String(value))) return null;
   const n = Number(value);
   return n >= 1 && n <= MAX_ID ? n : null;
 }
 
-// Each check returns an error message, or null when the value is fine
+
+// Validate packing item name
 function checkItemName(name) {
   if (typeof name !== 'string') return 'Item name is required.';
   if (CONTROL_CHARS.test(name)) return 'Item name contains characters that are not allowed.';
@@ -32,36 +38,40 @@ function checkItemName(name) {
   return null;
 }
 
+// Check whether the selected category is valid
 function checkCategory(category) {
   return CATEGORIES.includes(category) ? null : `Category must be one of: ${CATEGORIES.join(', ')}.`;
 }
 
+// Check whether is_checked contains a boolean value
 function checkChecked(value) {
   return typeof value === 'boolean' ? null : 'is_checked must be true or false.';
 }
 
+// Helper functions for common responses
 const badRequest = (res, error, field) => res.status(400).json({ error, field });
 const tripNotFound = (res) => res.status(404).json({ error: 'Trip not found.' });
 const itemNotFound = (res) => res.status(404).json({ error: 'Packing item not found.' });
 
-// 403, not 404: a member can see the item, so pretending it does not exist would only confuse them.
+// Item exists but user does not have permission to delete it
 const notYoursToDelete = (res) =>
   res.status(403).json({
     error: 'You can only delete items you added. Ask the trip owner to remove this one.',
   });
+
+  // Item exists but user does not have permission to edit it
 const notYoursToEdit = (res) =>
   res.status(403).json({
     error: 'You can only rename or recategorise items you added. Ask the trip owner to change this one.',
   });
 
-// The trip owner may change any item on the trip; everyone else only the items they
-// added. Items added before created_by existed have created_by = NULL, so only the
-// owner can touch those.
+// Check whether the user is allowed to manage the item
+// Trip owners can manage all items
+// Members can only manage items they created
 const mayManageItem = (item, access, userId) =>
   access.isOwner || (item.created_by !== null && item.created_by === userId);
 
-// Same rule as authController.serverError: a database outage is 503, anything else
-// unexpected is 500. The message never includes database details.
+// Handle server and database errors
 function serverError(res, err) {
   console.error(err);
   const down =
@@ -72,8 +82,7 @@ function serverError(res, err) {
     .json({ error: down ? 'Service temporarily unavailable. Please try again.' : 'Something went wrong. Please try again.' });
 }
 
-// Loads an item together with the user's access to its trip. Sends the 404 itself and
-// returns null when the user is not on that trip at all.
+// Find an item and check whether the user can access the trip
 async function loadAccessibleItem(res, itemId, userId) {
   const item = await Packing.findById(itemId);
   if (!item) {
@@ -89,6 +98,7 @@ async function loadAccessibleItem(res, itemId, userId) {
 }
 
 // GET /api/trips/:tripId/packing
+// Get all packing items for a trip
 exports.listItems = async (req, res) => {
   try {
     const tripId = parseId(req.params.tripId);
@@ -96,6 +106,8 @@ exports.listItems = async (req, res) => {
     if (!(await Packing.getTripAccess(tripId, req.user.id))) return tripNotFound(res);
 
     const items = await Packing.listByTrip(tripId);
+
+     // Count checked items
     const packed = items.filter((i) => i.is_checked).length;
     res.json({ trip_id: tripId, total: items.length, packed, items });
   } catch (err) {
@@ -103,7 +115,8 @@ exports.listItems = async (req, res) => {
   }
 };
 
-// POST /api/trips/:tripId/packing   body: { item_name, category? }
+// POST /api/trips/:tripId/packing
+// Create a new packing item
 exports.createItem = async (req, res) => {
   try {
     const tripId = parseId(req.params.tripId);
@@ -119,7 +132,7 @@ exports.createItem = async (req, res) => {
 
     if (!(await Packing.getTripAccess(tripId, req.user.id))) return tripNotFound(res);
 
-    // Stops one account filling the table, and keeps the list response a sane size
+// Prevent too many items from being added
     if ((await Packing.countByTrip(tripId)) >= MAX_ITEMS_PER_TRIP) {
       return badRequest(res, `A trip can have at most ${MAX_ITEMS_PER_TRIP} packing items.`);
     }
@@ -136,12 +149,15 @@ exports.createItem = async (req, res) => {
   }
 };
 
+// Update an existing packing item
 exports.updateItem = async (req, res) => {
   try {
     const itemId = parseId(req.params.itemId);
     if (!itemId) return badRequest(res, 'Invalid item id.', 'itemId');
 
     const { item_name, category, is_checked } = req.body || {};
+
+    // At least one field must be provided
     if (item_name === undefined && category === undefined && is_checked === undefined) {
       return badRequest(res, 'Send at least one of: item_name, category, is_checked.');
     }
@@ -161,6 +177,7 @@ exports.updateItem = async (req, res) => {
     const found = await loadAccessibleItem(res, itemId, req.user.id);
     if (!found) return;
 
+       // Only owners or item creators can modify item details
     const editsContent = item_name !== undefined || category !== undefined;
     if (editsContent && !mayManageItem(found.item, found.access, req.user.id)) {
       return notYoursToEdit(res);
@@ -181,6 +198,7 @@ exports.updateItem = async (req, res) => {
 };
 
 // DELETE /api/packing/:itemId
+// Delete a packing item
 exports.deleteItem = async (req, res) => {
   try {
     const itemId = parseId(req.params.itemId);
@@ -189,6 +207,7 @@ exports.deleteItem = async (req, res) => {
     const found = await loadAccessibleItem(res, itemId, req.user.id);
     if (!found) return;
 
+    // Only owner or creator can delete the item
     if (!mayManageItem(found.item, found.access, req.user.id)) return notYoursToDelete(res);
 
     const deleted = await Packing.remove(itemId, found.item.trip_id);
