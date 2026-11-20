@@ -1,5 +1,18 @@
 const fs = require("fs");
 const path = require("path");
+
+require("dotenv").config();
+
+// node database/init_tables.js --test  -> same schema, applied to TEST_DATABASE_URL
+if (process.argv.includes("--test")) {
+  if (!process.env.TEST_DATABASE_URL) {
+    console.error("TEST_DATABASE_URL is not set in .env");
+    process.exit(1);
+  }
+  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+}
+
+
 const pool = require("../server/db");
 
 async function initTables() {

@@ -1,0 +1,176 @@
+<!-- /* Author: Pyae Phyo Maung ( Luis )
+Student ID: 2535128
+Class: DIT/2B/02 */ -->
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Orbit | Packing</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+
+    <!-- Shared trip-page styles, then the packing additions -->
+    <link rel="stylesheet" href="./css/itinerary.css" />
+    <link rel="stylesheet" href="./css/packing.css" />
+</head>
+<body>
+<div class="orbit-app">
+
+    <!-- ====================================== -->
+    <!-- 1. NAVIGATION HEADER                  -->
+    <!-- (same shell as itinerary.html)        -->
+    <!-- ====================================== -->
+
+    <header class="trip-header orbit-navbar navbar bg-white">
+
+        <div class="brand-area">
+
+            <div class="brand">
+                <svg class="orbit-mark" viewBox="0 0 34 23" aria-hidden="true">
+                    <ellipse cx="17" cy="11.5" rx="14" ry="7" fill="none"
+                             stroke="#222" stroke-width="3"
+                             transform="rotate(-18 17 11.5)" />
+                    <ellipse cx="17" cy="11.5" rx="6" ry="7" fill="#222"
+                             transform="rotate(28 17 11.5)" />
+                </svg>
+                Orbit
+            </div>
+
+            <!-- Trip details loaded from the database -->
+            <div class="trip-heading">
+                <strong id="tripTitle">Loading trip...</strong>
+                <small id="tripSubtitle">Loading trip details...</small>
+            </div>
+
+        </div>
+
+        <!-- ================================== -->
+        <!-- 2. NAVIGATION TABS                 -->
+        <!-- ================================== -->
+
+        <nav class="trip-nav navbar-nav flex-row" aria-label="Main navigation">
+            <button type="button" class="nav-link" data-tab="itinerary">Itinerary</button>
+            <button type="button" class="nav-link active" data-tab="packing">Packing</button>
+            <button type="button" class="nav-link" data-tab="documents">Documents</button>
+        </nav>
+
+        <!-- ================================== -->
+        <!-- 3. TRAVELERS AND INVITE            -->
+        <!-- ================================== -->
+
+        <div class="trip-header-right">
+            <div id="memberAvatars" class="avatars" title="Trip members"></div>
+            <button class="btn" id="inviteBtn" type="button">Invite</button>
+        </div>
+
+    </header>
+
+    <!-- ====================================== -->
+    <!-- 4. MAIN WORKSPACE                     -->
+    <!-- Left: packing list. Right: suggestions -->
+    <!-- ====================================== -->
+
+    <div class="workspace workspace--packing">
+
+        <!-- ================================== -->
+        <!-- 5. PACKING LIST                    -->
+        <!-- ================================== -->
+
+        <main class="main">
+
+            <div class="pk-head">
+                <h1>Packing list</h1>
+                <span class="pk-count" id="packedCount" aria-live="polite">0 of 0 packed</span>
+                <div class="pk-progress" role="progressbar" id="packedBar"
+                     aria-label="Items packed" aria-valuenow="0"
+                     aria-valuemin="0" aria-valuemax="100">
+                    <span id="packedBarFill"></span>
+                </div>
+
+                <!-- Filter. "Mine" / "Unassigned" arrive with Member 4's
+                     item assignment feature; these three work on today's data. -->
+                <div class="segmented" id="packFilter">
+                    <button type="button" class="active" data-filter="all">All</button>
+                    <button type="button" data-filter="todo">To pack</button>
+                    <button type="button" data-filter="packed">Packed</button>
+                </div>
+            </div>
+
+            <!-- Errors -->
+            <div class="pk-alert hidden" id="packAlert" role="alert"></div>
+
+            <!-- Filled by packing.js once the smart list has been used -->
+            <div class="pk-banner hidden" id="packBanner">
+                <span class="sparkle" aria-hidden="true">✦</span>
+                <div class="pk-banner-text">
+                    <strong id="packBannerTitle">Smart list</strong>
+                    <p id="packBannerBody"></p>
+                </div>
+                <button type="button" class="btn btn-outline-purple" id="packBannerRegen">
+                    Regenerate
+                </button>
+            </div>
+
+            <!-- Category panels are rendered here -->
+            <div class="pk-grid" id="packGrid" aria-live="polite"></div>
+
+            <div class="empty-state" id="packLoading">Loading your packing list…</div>
+
+        </main>
+
+        <!-- ================================== -->
+        <!-- 6. SMART PACKING SUGGESTIONS       -->
+        <!-- ================================== -->
+
+        <aside class="suggestion-panel" aria-label="Smart packing suggestions">
+
+            <h2>
+                <span class="sparkle" aria-hidden="true">✦</span>
+                Smart packing
+                <span class="pk-preview-badge" id="suggPreviewBadge" hidden>PREVIEW</span>
+            </h2>
+
+            <!-- Weather the suggestions are based on -->
+            <div class="suggestion-context" id="suggContext">
+                <strong id="suggContextTitle">Checking the forecast…</strong>
+                <span id="suggContextBody"></span>
+            </div>
+
+            <div class="pk-weather" id="suggWeather"></div>
+
+            <!-- One .suggestion-card per suggested item -->
+            <div id="suggList"></div>
+
+            <button type="button" class="regen" id="suggRegen">Regenerate suggestions</button>
+
+            <p class="disclaimer" id="suggDisclaimer">
+                Suggestions are a starting point. Check them against your own plans
+                before you pack.
+            </p>
+
+        </aside>
+
+    </div>
+
+    <!-- ====================================== -->
+    <!-- 7. NOTIFICATION MESSAGE               -->
+    <!-- ====================================== -->
+
+    <div id="toast" class="orbit-toast hidden" role="status"></div>
+
+    <!-- Used to check whether the user owns the trip -->
+    <input type="hidden" id="currentUserId" value="" />
+
+</div>
+
+<script src="./js/packing.js"></script>
+</body>
+</html>
