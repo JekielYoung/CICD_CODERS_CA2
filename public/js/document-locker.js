@@ -42,6 +42,7 @@ const uploadModalError = document.getElementById('upload-modal-error');
 
 // Store the currently selected file
 let selectedFile = null;
+const maxFileSize = 10 * 1024 * 1024; // 10 MB
 
 // Validate trip ID
 if (!Number.isInteger(tripId) || tripId <= 0) {
@@ -287,6 +288,13 @@ fileInput.addEventListener('change', () => {
         return;
     }
 
+    if (file.size > maxFileSize) {
+        alert("File size must not exceed 10 MB.");
+        fileInput.value = ''; // Clear the selected file
+        selectedFile = null;
+        return;
+    }
+
     // Store the selected file for later upload
     selectedFile = file;
 
@@ -307,8 +315,7 @@ fileInput.addEventListener('change', () => {
 
 // Upload document
 async function uploadDocument(file, document_type) {
-    const maxSize = 10 * 1024 * 1024; // 10 MB
-    if (file.size > maxSize) {
+    if (file.size > maxFileSize) {
         showUploadStatus('File exceeds the 10 MB limit.', 'danger');
         return false;
     }
