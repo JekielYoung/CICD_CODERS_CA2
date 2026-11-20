@@ -3,6 +3,8 @@
 // Class: DIT/2B/02
 
 const Packing = require('../models/packingModel');
+const { serverError } = require('../utils/errors');
+
 
 // Available categories that must match the database enum
 const CATEGORIES = ['Clothing', 'Electronics', 'Toiletries', 'Documents', 'Others'];
@@ -71,16 +73,6 @@ const notYoursToEdit = (res) =>
 const mayManageItem = (item, access, userId) =>
   access.isOwner || (item.created_by !== null && item.created_by === userId);
 
-// Handle server and database errors
-function serverError(res, err) {
-  console.error(err);
-  const down =
-    err && (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT' ||
-            /^(08|57P0)/.test(err.code || '') || /connection|timeout/i.test(err.message || ''));
-  return res
-    .status(down ? 503 : 500)
-    .json({ error: down ? 'Service temporarily unavailable. Please try again.' : 'Something went wrong. Please try again.' });
-}
 
 // Find an item and check whether the user can access the trip
 async function loadAccessibleItem(res, itemId, userId) {

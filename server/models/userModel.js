@@ -7,7 +7,7 @@ const db = require('../db');
 exports.findByEmail = async (email) => {
   const { rows } = await db.query(
     `SELECT user_id AS id, name, email, password_hash, token_version
-     FROM app_user WHERE LOWER(email) = $1`,
+     FROM app_user WHERE LOWER(email) = LOWER($1)`,
     [email]
   );
   return rows[0];

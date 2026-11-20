@@ -1,3 +1,7 @@
+# Author: Pyae Phyo Maung ( Luis )
+# Student ID: 2535128
+# Class: DIT/2B/02
+
 # Save as .github/workflows/ci.yml
 name: CI
 
@@ -13,8 +17,11 @@ env:
   DB_PORT: 5432
   DB_USER: postgres
   DB_PASSWORD: postgres
-  DB_NAME: trip_planner
+  DB_NAME: trip_planner_test
   JWT_SECRET_KEY: ci-only-secret
+  # packing.test.js reads this and refuses to run against a database
+  # whose name does not contain "test", so the CI database is named accordingly.
+  TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/trip_planner_test
   NODE_ENV: test
 
 jobs:
@@ -26,7 +33,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: trip_planner
+          POSTGRES_DB: trip_planner_test
         ports:
           - 5432:5432
         options: >-

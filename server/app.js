@@ -4,6 +4,7 @@ require('dotenv').config();
 const path = require('path');
 
 const pool = require('./db');
+const { serverError } = require('./utils/errors');
 
 const app = express();
 
@@ -37,8 +38,7 @@ app.use((err, req, res, next) => {
   if (err.type === 'entity.too.large' || err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: 'Invalid or oversized request.' });
   }
-  console.error(err);
-  res.status(err.status || 500).json({ error: err.message || 'Server error' });
+  return serverError(res, err);
 });
 
 if (require.main === module) {

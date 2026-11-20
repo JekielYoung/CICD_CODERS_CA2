@@ -27,6 +27,12 @@ pool.on('error', (err) => {
   console.error('Unexpected Postgres pool error:', err.message);
 });
 
+pool.on('connect', (client) => {
+    client.on('error', (err) => {
+      console.error('Unexpected Postgres client error:', err.message);
+    });
+  });
+
 pool.connect((err, client, release) => {
   if (err) {
     console.error('Error connecting to PostgreSQL database:', err);

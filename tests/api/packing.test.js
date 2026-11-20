@@ -1,11 +1,15 @@
-// tests/api/packing.test.js  (Packing list: PKG-01 .. PKG-20)
-// Covers GET/POST /api/trips/:tripId/packing and PATCH/DELETE /api/packing/:itemId:
-// validation, the owner/member permission rules, the 403-vs-404 split and the
-// per-trip item cap.
+// Author: Pyae Phyo Maung ( Luis )
+// Student ID: 2535128
+// Class: DIT/2B/02
+
+// tests/api/packing.test.js
+// Tests the packing list API (PKG-01 to PKG-20).
+// Covers create, view, update and delete operations,
+// input validation, user permissions, 403/404 responses,
+// and the maximum item limit per trip.
 //
-// Runs against a real PostgreSQL database. TEST_DATABASE_URL must point at a
-// separate test database; the suite refuses to run against anything whose name
-// does not contain "test" (override with ALLOW_TEST_DB_ANY_NAME=1).
+// Uses a separate PostgreSQL test database.
+// TEST_DATABASE_URL must be set before running the tests.
 
 process.env.DOTENV_CONFIG_QUIET = 'true';
 require('dotenv').config();
