@@ -3,7 +3,7 @@
 
 // Get trip_id from the URL
 const params = new URLSearchParams(window.location.search);
-const trip_id = Number(params.get('trip'));
+const tripId = Number(params.get('tripId'));
 
 // DOM elements
 const tripName = document.getElementById('trip-name');
@@ -19,6 +19,13 @@ const documentError = document.getElementById('document-error');
 const documentEmpty = document.getElementById('document-empty');
 const documentList = document.getElementById('document-list');
 const documentTypeSelect = document.getElementById('document-type-select');
+
+const itineraryLink = document.getElementById('itinerary-page-link');
+itineraryLink.href = `itinerary.html?tripId=${tripId}`;
+// const packinngLink = document.getElementById('packing-page-link');
+// itineraryLink.href = `packing.html?tripId=${tripId}`; //replace the html with the actual packing feature page link
+const documentLink = document.getElementById('document-locker-page-link');
+documentLink.href = `document-locker.html?tripId=${tripId}`;
 
 // Upload elements
 const fileInput = document.getElementById('file-input');
@@ -37,13 +44,18 @@ const uploadModalError = document.getElementById('upload-modal-error');
 let selectedFile = null;
 
 // Validate trip ID
-if (!Number.isInteger(trip_id) || trip_id <= 0) {
+if (!Number.isInteger(tripId) || tripId <= 0) {
     documentError.textContent = 'Invalid trip ID.';
     documentError.classList.remove('d-none');
     documentLoading.classList.add('d-none');
 } else {
-    loadTripDetails();
-    loadDocuments();
+    try {
+        await loadTripDetails();
+        await loadDocuments();
+    } catch (error) {
+        alert(error);
+        window.location.href = "home.html";
+    }
 }
 
 
@@ -51,7 +63,7 @@ if (!Number.isInteger(trip_id) || trip_id <= 0) {
 async function loadTripDetails() {
     try {
         const token = localStorage.getItem('orbit_token');
-        const response = await fetch(`/api/trips/${trip_id}`,
+        const response = await fetch(`/api/trips/${tripId}`,
             {
                 method: 'GET',
                 credentials: 'include',
@@ -61,7 +73,8 @@ async function loadTripDetails() {
             }
         );
         if (!response.ok) {
-            throw new Error('Failed to retrieve trip information');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to retrieve trip information');
         }
 
         const result = await response.json();
@@ -90,6 +103,7 @@ async function loadTripDetails() {
     } catch (error) {
         console.error('Error loading trip details:', error);
         tripName.textContent = 'Unable to load trip information';
+        throw error;
     }
 }
 
@@ -102,7 +116,7 @@ async function loadDocuments() {
     documentLoading.classList.remove('d-none');
     try {
         const token = localStorage.getItem('orbit_token');
-        const response = await fetch(`/api/document/${trip_id}`,
+        const response = await fetch(`/api/document/${tripId}`,
             {
                 method: 'GET',
                 credentials: 'include',
@@ -307,7 +321,7 @@ async function uploadDocument(file, document_type) {
         showUploadStatus('Uploading document...', 'info');
 
         const token = localStorage.getItem('orbit_token');
-        const response = await fetch(`/api/document/${trip_id}/upload`,
+        const response = await fetch(`/api/document/${tripId}/upload`,
             {
                 method: 'POST',
                 credentials: 'include',
@@ -347,7 +361,7 @@ async function deleteDocument(document_id, file_name) {
 
     try {
         const token = localStorage.getItem('orbit_token');
-        const response = await fetch(`/api/document/${trip_id}/${document_id}`,
+        const response = await fetch(`/api/document/${tripId}/${document_id}`,
             {
                 method: 'DELETE',
                 credentials: 'include',

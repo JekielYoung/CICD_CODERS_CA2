@@ -10,23 +10,26 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/home.css">
-  <!-- Redirects to login.html if there is no token -->
-  <script type="module" src="js/shared/auth-check.js"></script>
+  <script type="module" src="js/shared/api.js"></script>
 </head>
 
 <body>
   <!-- Top bar -->
   <nav class="navbar navbar-expand-md bg-white border-bottom orbit-navbar">
     <div class="container-xl">
-      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="home.html">
-        <img src="images/orbit-logo.svg" alt="" width="28" height="28">
-        Orbit
-      </a>
-
+			<!-- logo -->
+      <div class="me-3">
+				<svg class="orbit-mark" viewBox="0 0 34 23" aria-hidden="true" >
+						<ellipse cx="17" cy="11.5" rx="14" ry="7" fill="none" stroke="#222" stroke-width="3" transform="rotate(-18 17 11.5)" />
+						<ellipse cx="17" cy="11.5" rx="6" ry="7" fill="#222" transform="rotate(28 17 11.5)" />
+				</svg>
+				Orbit
+			</div>
+			<!-- smaller screen UI -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topbar-menu" aria-controls="topbar-menu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-
+			<!-- trip Title + Details -->
       <div class="me-5" id="trip-details">
         <p class="mb-0 fs-6 fw-medium" id="trip-name">Loading trip...</p>
         <div class="d-flex flex-wrap gap-2">
@@ -35,17 +38,18 @@
           <span class="fw-light" id="trip-travellers"></span>
         </div>
       </div>
-
+			<!-- navigation buttons -->
       <div class="collapse navbar-collapse" id="topbar-menu">
         <ul class="navbar-nav me-auto ms-md-3">
           <li class="nav-item">
-            <a class="nav-link" href="home.html">Itinerary</a>
+            <a class="nav-link" id="itinerary-page-link" href="itinerary.html">Itinerary</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="home.html?view=shared">Packing</a>
+						<!-- replace the href with the actual packing page html -->
+            <a class="nav-link" id="packing-page-link" href="packing.html">Packing</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="document-locker.html">Documents</a>
+            <a class="nav-link active" id="document-locker-page-link" aria-current="page" href="document-locker.html">Documents</a>
           </li>
         </ul>
         <!-- User menu -->
@@ -174,7 +178,6 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="js/home.js"></script>
   <script type="module" src="js/document-locker.js"></script>
 </body>
 
