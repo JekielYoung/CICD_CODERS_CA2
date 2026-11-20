@@ -25,7 +25,6 @@ app.use('/api/auth', require('./routes/authRoutes.js'));
 // app.use('/api/trips', require('./routes/trips.routes'));
 // app.use('/api/activities', require('./routes/activities.routes'));
 
-app.use('/api/auth', require('./routes/authRoutes.js'));
 app.use('/api', require('./routes/packingRoutes.js'));  
 
 app.use('/api', (req, res) => {
