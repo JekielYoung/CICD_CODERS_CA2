@@ -1146,7 +1146,7 @@
 
     const queryId = new URLSearchParams(
       window.location.search
-    ).get("tripId");
+    ).get("trip");
 
     // Check if trip ID is a positive, safe integer
     const tripIdNumber = Number(queryId);

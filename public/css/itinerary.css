@@ -1201,6 +1201,17 @@ button:disabled {
   }
 }
 
+.brand-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.brand-link:hover {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
 
 /* =====================================
    EXPANDABLE ACTIVITY NOTES
