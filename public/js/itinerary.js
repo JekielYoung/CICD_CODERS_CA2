@@ -573,7 +573,7 @@
             aria-label="Close"
             type="button"
           >
-            ×
+            x
           </button>
 
           ${html}
@@ -990,7 +990,7 @@
     if (!button) return;
 
     const d = button.dataset;
-
+    
     // Expand or collapse notes
     if (button.classList.contains("read-more-btn")) {
       const container = button.closest(".activity-notes");
