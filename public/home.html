@@ -57,24 +57,31 @@
     <!-- Greeting + quick create -->
     <section class="row align-items-end g-4 mb-4">
       <div class="col-lg-5">
-        <h1 class="h2 mb-1" id="greeting">Good afternoon, John</h1>
-        <p class="text-secondary mb-0" id="greeting-sub">You have 2 upcoming trips. The next one starts in 41 days.</p>
+        <h1 class="h2 mb-1" id="greeting">Welcome</h1>
+        <p class="text-secondary mb-0" id="greeting-sub"></p>
       </div>
 
       <div class="col-lg-7">
-        <form class="card card-body" id="quick-trip-form">
+        <!-- This form does not create anything. A trip needs a name (trip.title is NOT NULL),
+             so it hands off to trip-form.html as a plain GET. trip-form.js reads
+             ?destination=&start_date=&end_date= and prefills the fields. -->
+        <form class="card card-body" id="quick-trip-form" action="trip-form.html" method="get">
           <h2 class="h6 mb-3">Start a new trip</h2>
           <div class="row g-2 align-items-end">
-            <div class="col-sm-5">
-              <label class="form-label small fw-semibold" for="qt-destination">Where to?</label>
-              <input id="qt-destination" name="destination" type="text" class="form-control" placeholder="e.g. Kyoto, Japan" required>
-            </div>
             <div class="col-sm-4">
-              <label class="form-label small fw-semibold" for="qt-dates">Dates</label>
-              <input id="qt-dates" name="dates" type="text" class="form-control" placeholder="Add dates">
+              <label class="form-label small fw-semibold" for="qt-destination">Where to?</label>
+              <input id="qt-destination" name="destination" type="text" class="form-control" maxlength="100" placeholder="e.g. Kyoto, Japan" required>
             </div>
-            <div class="col-sm-3 d-grid">
-              <button type="submit" class="btn btn-dark">Create trip</button>
+            <div class="col-6 col-sm-3">
+              <label class="form-label small fw-semibold" for="qt-start">Start</label>
+              <input id="qt-start" name="start_date" type="date" class="form-control">
+            </div>
+            <div class="col-6 col-sm-3">
+              <label class="form-label small fw-semibold" for="qt-end">End</label>
+              <input id="qt-end" name="end_date" type="date" class="form-control">
+            </div>
+            <div class="col-sm-2 d-grid">
+              <button type="submit" class="btn btn-dark">Continue</button>
             </div>
           </div>
           <p class="form-text mb-0 mt-2">You can name the trip and invite travellers on the next step.</p>
@@ -86,8 +93,8 @@
          When switching filters, home.js toggles btn-dark / btn-outline-dark on the buttons. -->
     <section class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
       <div class="btn-group" role="group" aria-label="Trip filter">
-        <button type="button" class="btn btn-dark" data-filter="upcoming">Upcoming · <span id="count-upcoming">3</span></button>
-        <button type="button" class="btn btn-outline-dark" data-filter="past">Past · <span id="count-past">2</span></button>
+        <button type="button" class="btn btn-dark" data-filter="upcoming">Upcoming · <span id="count-upcoming">0</span></button>
+        <button type="button" class="btn btn-outline-dark" data-filter="past">Past · <span id="count-past">0</span></button>
         <button type="button" class="btn btn-outline-dark" data-filter="all">All</button>
       </div>
 
@@ -98,11 +105,11 @@
       </select>
     </section>
 
-    <!-- Trip cards: home.js clears and refills #trip-grid from /api/trips.
-         The cards below are sample markup so you can style them first. -->
+    <!-- Trip cards: home.js fills #trip-grid from /api/trips.
+         Only the "New trip" card is static; home.js keeps it and adds the trip cards after it. -->
     <section class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3" id="trip-grid" aria-live="polite">
 
-      <div class="col">
+      <div class="col" id="trip-new-col">
         <a class="card h-100 trip-new text-decoration-none text-secondary" href="trip-form.html">
           <div class="card-body d-flex flex-column align-items-center justify-content-center text-center gap-1 py-5">
             <span class="trip-new__plus">+</span>
@@ -111,76 +118,6 @@
           </div>
         </a>
       </div>
-
-      <div class="col">
-        <article class="card h-100">
-          <div class="trip-cover">
-            <span class="badge rounded-pill text-bg-light border">In 41 days</span>
-            <span class="trip-cover__label">Cover photo</span>
-          </div>
-          <div class="card-body d-flex flex-column">
-            <h3 class="h5 card-title">Paris Winter Break</h3>
-            <p class="text-secondary small mb-3">14 – 18 Dec 2026 · 5 days</p>
-            <div class="d-flex align-items-center gap-2 mb-3">
-              <div class="progress flex-grow-1" role="progressbar" aria-label="Days planned" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" style="width: 60%"></div>
-              </div>
-              <span class="small text-secondary text-nowrap">3 of 5 days planned</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <div class="avatars"><span class="avatar">JD</span><span class="avatar">AK</span><span class="avatar">ML</span></div>
-              <a class="fw-semibold link-dark" href="itinerary.html?tripId=1">Open →</a>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <div class="col">
-        <article class="card h-100">
-          <div class="trip-cover">
-            <span class="badge rounded-pill text-bg-light border">In 80 days</span>
-            <span class="trip-cover__label">Cover photo</span>
-          </div>
-          <div class="card-body d-flex flex-column">
-            <h3 class="h5 card-title">Bali Long Weekend</h3>
-            <p class="text-secondary small mb-3">22 – 25 Jan 2027 · 4 days</p>
-            <div class="d-flex align-items-center gap-2 mb-3">
-              <div class="progress flex-grow-1" role="progressbar" aria-label="Days planned" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" style="width: 25%"></div>
-              </div>
-              <span class="small text-secondary text-nowrap">1 of 4 days planned</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <div class="avatars"><span class="avatar">JD</span><span class="avatar">AK</span><span class="avatar">ML</span></div>
-              <a class="fw-semibold link-dark" href="itinerary.html?tripId=2">Open →</a>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <div class="col">
-        <article class="card h-100">
-          <div class="trip-cover">
-            <span class="badge rounded-pill text-bg-light border">In 147 days</span>
-            <span class="trip-cover__label">Cover photo</span>
-          </div>
-          <div class="card-body d-flex flex-column">
-            <h3 class="h5 card-title">Tokyo Cherry Blossoms</h3>
-            <p class="text-secondary small mb-3">29 Mar – 6 Apr 2027 · 9 days</p>
-            <div class="d-flex align-items-center gap-2 mb-3">
-              <div class="progress flex-grow-1" role="progressbar" aria-label="Days planned" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" style="width: 0%"></div>
-              </div>
-              <span class="small text-secondary text-nowrap">Not started</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <div class="avatars"><span class="avatar">JD</span></div>
-              <a class="fw-semibold link-dark" href="itinerary.html?tripId=3">Open →</a>
-            </div>
-          </div>
-        </article>
-      </div>
-
     </section>
 
     <!-- Shown by home.js when the filter or search finds nothing -->
