@@ -6,3 +6,6 @@ installed dependencies. Everyone installs them locally.
 ```bash
 npm install     # first-time setup, or after pulling dependency changes
 npm run dev     # start in development mode
+
+#To create/update the database (PostgreSQL must be running)
+npm run db:init        

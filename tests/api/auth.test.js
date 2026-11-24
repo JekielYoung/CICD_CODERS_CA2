@@ -8,12 +8,15 @@
 process.env.DOTENV_CONFIG_QUIET = 'true'; // hide dotenv's startup message
 require('dotenv').config();
 process.env.NODE_ENV = 'test';
-process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL;
+
+// Tests must never touch the development database.
+if (!process.env.TEST_DATABASE_URL) {
+  throw new Error('Set TEST_DATABASE_URL in .env, e.g. postgresql://postgres:postgres@localhost:5432/trip_planner_test');
+}
+process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
 process.env.JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'test-only-secret';
 process.env.JWT_EXPIRES_IN = '60m';
 process.env.BCRYPT_ROUNDS = '4'; // fast hashing in tests
-// The main app gets very high limits so ordinary tests are never blocked.
-// LOG-10 and FP-10 load their own copy of the app with small limits.
 process.env.LOGIN_RATE_MAX = '1000';
 process.env.FORGOT_RATE_MAX = '1000';
 
@@ -67,7 +70,15 @@ function freshApp(env) {
   return fresh;
 }
 
-beforeAll(cleanup);
+beforeAll(async () => {
+  const { rows } = await db.query('SELECT current_database() AS name');
+  const dbName = rows[0].name;
+  if (!/test/i.test(dbName) && process.env.ALLOW_TEST_DB_ANY_NAME !== '1') {
+    throw new Error(`Refusing to run against "${dbName}": point TEST_DATABASE_URL at a *_test database.`);
+  }
+  await cleanup();
+});
+
 afterAll(async () => {
   await cleanup();
   await db.end();

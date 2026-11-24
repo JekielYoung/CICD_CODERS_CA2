@@ -1012,6 +1012,15 @@
 
     // Navigation tabs
     if (d.tab) {
+      if (d.tab === "packing") {
+        window.location.href = `/packing.html?tripId=${tripId}`;
+        return;
+      }
+
+      if (d.tab === "documents") {
+        window.location.href = `document-locker.html?tripId=${tripId}`;
+        return;
+      }
       if (d.tab !== "itinerary") {
         toast(d.tab + " is not implemented yet.");
         return;
