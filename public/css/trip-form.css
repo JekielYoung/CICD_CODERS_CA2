@@ -1,0 +1,43 @@
+/* public/css/trip-form.css
+   Only what Bootstrap doesn't cover on the trip form: the traveller chips. */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 12px 3px 3px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 999px;
+  background: #f4f4f2;
+  font-size: 0.875rem;
+}
+
+/* Chips with a remove button need less padding on the right */
+.chip:has(.chip__remove) {
+  padding-right: 4px;
+}
+
+.chip .avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.chip__remove {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.chip__remove:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--bs-body-color);
+}
