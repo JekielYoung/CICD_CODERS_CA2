@@ -7,6 +7,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const PasswordReset = require('../models/passwordResetModel');
 const mailer = require('../services/mailer');
+const { serverError } = require('../utils/errors');
+
+
 const { LIMITS, normalizeEmail, isValidEmail, checkName, checkPassword } = require('../utils/validators');
 
 const BCRYPT_ROUNDS = Number(process.env.BCRYPT_ROUNDS) || 10;
@@ -33,18 +36,6 @@ const publicUser = (user) => ({ id: user.id, name: user.name, email: user.email 
 
 function badRequest(res, error, field) {
   return res.status(400).json({ error, field });
-}
-
-// Database down or unreachable -> 503, anything else unexpected -> 500.
-// The message never includes database details.
-function serverError(res, err) {
-  console.error(err);
-  const down =
-    err && (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT' ||
-            /^(08|57P0)/.test(err.code || '') || /connection|timeout/i.test(err.message || ''));
-  return res
-    .status(down ? 503 : 500)
-    .json({ error: down ? 'Service temporarily unavailable. Please try again.' : 'Something went wrong. Please try again.' });
 }
 
 // POST /api/auth/register   (REG-01 ... REG-13)

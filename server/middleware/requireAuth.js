@@ -3,6 +3,7 @@
 // Sets req.user = { id, email } when the token is good, otherwise answers 401.
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const { serverError } = require('../utils/errors');
 
 module.exports = async function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
@@ -18,8 +19,15 @@ module.exports = async function requireAuth(req, res, next) {
     return res.status(401).json({ error: 'Session expired. Please log in again.' });
   }
 
-  // Logout and password reset bump token_version, so older tokens stop working (LOG-11)
-  const user = await User.findById(payload.id);
+// Logout and password reset bump token_version, so older tokens stop working (LOG-11).
+// Returns a 503 error with a generic message if the database is unavailable,
+// preventing database details from being exposed to users (REG-13).
+  let user;
+  try {
+    user = await User.findById(payload.id);
+  } catch (err) {
+    return serverError(res, err);
+  }
   if (!user || user.token_version !== payload.tv) {
     return res.status(401).json({ error: 'Session expired. Please log in again.' });
   }
