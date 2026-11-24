@@ -19,7 +19,7 @@ const CONTROL_CHARS = /[\u0000-\u001F\u007F]/;
 
 
 // Remove zero-width characters that cannot be seen by users
-const ZERO_WIDTH = /[​-‍⁠﻿]/g;
+const ZERO_WIDTH = /[\u200B-\u200D\u2060\uFEFF]/g;
 
 // Convert a value into a valid ID number
 // Returns null if the format is invalid
@@ -95,13 +95,14 @@ exports.listItems = async (req, res) => {
   try {
     const tripId = parseId(req.params.tripId);
     if (!tripId) return badRequest(res, 'Invalid trip id.', 'tripId');
-    if (!(await Packing.getTripAccess(tripId, req.user.id))) return tripNotFound(res);
+    const access = await Packing.getTripAccess(tripId, req.user.id);
+    if (!access) return tripNotFound(res);
 
     const items = await Packing.listByTrip(tripId);
 
      // Count checked items
     const packed = items.filter((i) => i.is_checked).length;
-    res.json({ trip_id: tripId, total: items.length, packed, items });
+    res.json({ trip_id: tripId, is_owner: access.isOwner, total: items.length, packed, items });
   } catch (err) {
     serverError(res, err);
   }
